@@ -7,6 +7,8 @@
  * mod.thing === 'a thing'; // true
  */
 
+var common = require('common');
+
 var roleBuilder = {
 
     /** @param {Creep} creep **/
@@ -28,15 +30,11 @@ var roleBuilder = {
                 // var target = Game.getObjectById('58fb7ae8b10571061ceaed4b');
 
                 if (creep.build(target) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+                    creep.moveTo(target, {visualizePathStyle: {stroke: '#ffaa00'}});
                 }
             }
         } else {
-            var source = creep.pos.findClosestByRange(FIND_SOURCES);
-
-            if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+            common.getResources(creep, true, '#ffaa00');
         }
     }
 };

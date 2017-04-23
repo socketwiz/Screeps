@@ -5,6 +5,8 @@ var roleBuilder = require('role.builder');
 
 function formatError(error) {
     switch (error) {
+        case ERR_BUSY:
+            return 'Busy';
         case ERR_NOT_ENOUGH_ENERGY:
             return 'Not enough energy';
         default:
@@ -40,43 +42,49 @@ module.exports.loop = function () {
     }
 
     for (var name in Memory.creeps) {
-        if (!Game.creeps[name]) {
-            delete Memory.creeps[name];
-            console.log('Burying the deceased creap:', name);
+        if (Memory.creeps.hasOwnProperty(name)) {
+            if (!Game.creeps[name]) {
+                delete Memory.creeps[name];
+                console.log('Burying the deceased creap:', name);
+            }
         }
     }
 
     if (harvesters.length < 2) {
         // var newHarvester = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'harvester'});
-        var newHarvester = Game.spawns['SpawnDominator'].createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'harvester'});
+        var newHarvester = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'harvester'});
         console.log('Spawning new harvester: ' + formatError(newHarvester));
     }
 
     if (upgraders.length < 2 && harvesters.length && builders.length) {
-        var newUpgrader = Game.spawns['SpawnDominator'].createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'upgrader'});
+        var newUpgrader = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'upgrader'});
         console.log('Spawning new upgrader: ' + formatError(newUpgrader));
     }
 
     if (builders.length < 2 && harvesters.length) {
-        var newBuilder = Game.spawns['SpawnDominator'].createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'builder'});
+        var newBuilder = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'builder'});
         console.log('Spawning new builder: ' + formatError(newBuilder));
     }
 
     for (var room in Game.rooms) {
-        console.log('Room "' + room + '" has ' + Game.rooms[room].energyAvailable + ' energy');
+        if (Game.rooms.hasOwnProperty(room)) {
+            console.log('Room "' + room + '" has ' + Game.rooms[room].energyAvailable + ' energy');
+        }
     }
 
     for(var creeps in Game.creeps) {
-        var creep = Game.creeps[creeps];
+        if (Game.creeps.hasOwnProperty(creeps)) {
+            var creep = Game.creeps[creeps];
 
-        if (creep.memory.role == 'harvester') {
-            roleHarvester.run(creep);
-        }
-        if (creep.memory.role == 'upgrader') {
-            roleUpgrader.run(creep);
-        }
-        if (creep.memory.role == 'builder') {
-            roleBuilder.run(creep);
+            if (creep.memory.role == 'harvester') {
+                roleHarvester.run(creep);
+            }
+            if (creep.memory.role == 'upgrader') {
+                roleUpgrader.run(creep);
+            }
+            if (creep.memory.role == 'builder') {
+                roleBuilder.run(creep);
+            }
         }
     }
 };

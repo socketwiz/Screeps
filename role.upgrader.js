@@ -7,13 +7,7 @@
  * mod.thing == 'a thing'; // true
  */
 
-function getResources(creep) {
-    var source = creep.pos.findClosestByRange(FIND_SOURCES);
-
-    if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-        creep.moveTo(source);
-    }
-}
+var common = require('common');
 
 var roleUpgrader = {
 
@@ -23,11 +17,11 @@ var roleUpgrader = {
 
         // if (creep.carry.energy === 0) {
         if (notNearController && creep.carry.energy < creep.carryCapacity) {
-            getResources(creep);
+            common.getResources(creep, true, '#29506d', 1);
         } else if (creep.carry.energy) {
-            creep.moveTo(creep.room.controller);
+            creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#29506d'}});
         } else {
-            getResources(creep);
+            common.getResources(creep, true, '#29506d', 1);
         }
     }
 };
