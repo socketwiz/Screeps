@@ -3,6 +3,12 @@ var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 
+/**
+ * Return a readable string rather than a number
+ *
+ * @param {Number} error - error to format
+ * @return {String} - formatted error
+ */
 function formatError(error) {
     switch (error) {
         case ERR_BUSY:
@@ -14,7 +20,7 @@ function formatError(error) {
     }
 }
 
-module.exports.loop = function () {
+module.exports.loop = function gameLoop() {
     var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
@@ -52,17 +58,17 @@ module.exports.loop = function () {
 
     if (harvesters.length < 2) {
         // var newHarvester = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'harvester'});
-        var newHarvester = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'harvester'});
+        var newHarvester = Game.spawns['SpawnDominator'].createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'harvester'});
         console.log('Spawning new harvester: ' + formatError(newHarvester));
     }
 
     if (upgraders.length < 2 && harvesters.length && builders.length) {
-        var newUpgrader = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'upgrader'});
+        var newUpgrader = Game.spawns['SpawnDominator'].createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'upgrader'});
         console.log('Spawning new upgrader: ' + formatError(newUpgrader));
     }
 
     if (builders.length < 2 && harvesters.length) {
-        var newBuilder = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'builder'});
+        var newBuilder = Game.spawns['SpawnDominator'].createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'builder'});
         console.log('Spawning new builder: ' + formatError(newBuilder));
     }
 

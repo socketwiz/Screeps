@@ -21,7 +21,7 @@ var roleUpgrader = {
         } else if (creep.carry.energy) {
             creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#29506d'}});
         } else {
-            common.getResources(creep, true, '#29506d', 1);
+            common.getResources(creep, false, '#29506d', 1);
         }
     }
 };

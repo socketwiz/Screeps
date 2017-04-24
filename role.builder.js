@@ -34,7 +34,7 @@ var roleBuilder = {
                 }
             }
         } else {
-            common.getResources(creep, true, '#ffaa00');
+            common.getResources(creep, false, '#ffaa00', 1);
         }
     }
 };
