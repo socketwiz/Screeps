@@ -15,6 +15,15 @@ var roleUpgrader = {
     'run': function moveUpgraderCreep(creep) {
         var notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
 
+        if (creep.memory.upgrading && creep.carry.energy == 0) {
+            creep.memory.upgrading = false;
+            creep.say('🔄 harvest');
+        }
+        if (!creep.memory.upgrading && creep.carry.energy == creep.carryCapacity) {
+            creep.memory.upgrading = true;
+            creep.say(':zap: upgrade');
+        }
+
         // if (creep.carry.energy === 0) {
         if (notNearController && creep.carry.energy < creep.carryCapacity) {
             common.getResources(creep, true, '#29506d', 1);

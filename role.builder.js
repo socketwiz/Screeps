@@ -32,6 +32,18 @@ var roleBuilder = {
                 if (creep.build(target) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(target, {visualizePathStyle: {stroke: '#ffaa00'}});
                 }
+            } else {
+                // Do upgrade while waiting for something else to build
+                var notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
+
+                // if (creep.carry.energy === 0) {
+                if (notNearController && creep.carry.energy < creep.carryCapacity) {
+                    common.getResources(creep, true, '#29506d', 1);
+                } else if (creep.carry.energy) {
+                    creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#29506d'}});
+                } else {
+                    common.getResources(creep, false, '#29506d', 1);
+                }
             }
         } else {
             common.getResources(creep, false, '#ffaa00', 1);

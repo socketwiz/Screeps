@@ -25,7 +25,6 @@ module.exports.loop = function gameLoop() {
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
 
-    console.log('Harvesters: ' + harvesters.length);
     console.log('Upgrades: ' + upgraders.length);
     console.log('Builders: ' + builders.length);
 
@@ -56,19 +55,13 @@ module.exports.loop = function gameLoop() {
         }
     }
 
-    if (harvesters.length < 2) {
-        // var newHarvester = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'harvester'});
-        var newHarvester = Game.spawns['SpawnDominator'].createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'harvester'});
-        console.log('Spawning new harvester: ' + formatError(newHarvester));
-    }
-
-    if (upgraders.length < 2 && harvesters.length && builders.length) {
-        var newUpgrader = Game.spawns['SpawnDominator'].createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'upgrader'});
+    if (upgraders.length < 3 && harvesters.length && builders.length) {
+        var newUpgrader = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'upgrader'});
         console.log('Spawning new upgrader: ' + formatError(newUpgrader));
     }
 
     if (builders.length < 2 && harvesters.length) {
-        var newBuilder = Game.spawns['SpawnDominator'].createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'builder'});
+        var newBuilder = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'builder'});
         console.log('Spawning new builder: ' + formatError(newBuilder));
     }
 
@@ -78,13 +71,12 @@ module.exports.loop = function gameLoop() {
         }
     }
 
+    roleHarvester.init();
+
     for(var creeps in Game.creeps) {
         if (Game.creeps.hasOwnProperty(creeps)) {
             var creep = Game.creeps[creeps];
 
-            if (creep.memory.role == 'harvester') {
-                roleHarvester.run(creep);
-            }
             if (creep.memory.role == 'upgrader') {
                 roleUpgrader.run(creep);
             }
