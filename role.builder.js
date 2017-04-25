@@ -1,16 +1,17 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('role.builder');
- * mod.thing === 'a thing'; // true
- */
 
-var roleBuilder = {
+let BaseRole = require('role.base');
+
+class RoleBuilder extends BaseRole {
+    constructor(role, size) {
+        let creeps = _.filter(Game.creeps, (creep) => creep.memory.role == role);
+
+        super(creeps, role, size);
+
+        this.creeps = creeps;
+    }
 
     /** @param {Creep} creep **/
-    'run': function moveBuilderCreep(creep) {
+    run(creep) {
         if (creep.memory.building && creep.carry.energy === 0) {
             creep.memory.building = false;
             creep.say('🔄 harvest');
@@ -24,20 +25,41 @@ var roleBuilder = {
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
 
             if (targets.length) {
-                var target = Game.getObjectById('58fb7ae8b10571061ceaed4b');
+                var target = targets[0];
+                // var target = Game.getObjectById('58fb7ae8b10571061ceaed4b');
 
                 if (creep.build(target) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+                    creep.moveTo(target, {visualizePathStyle: {stroke: '#ffaa00'}});
+                }
+            } else {
+                // Do upgrade while waiting for something else to build
+                var notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
+
+                // if (creep.carry.energy === 0) {
+                if (notNearController && creep.carry.energy < creep.carryCapacity) {
+                    super.getResources(creep, true, '#29506d', 1);
+                } else if (creep.carry.energy) {
+                    creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#29506d'}});
+                } else {
+                    super.getResources(creep, false, '#29506d', 1);
                 }
             }
         } else {
-            var source = creep.pos.findClosestByRange(FIND_SOURCES);
-
-            if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+            super.getResources(creep, false, '#ffaa00', 1);
         }
     }
-};
 
-module.exports = roleBuilder;
+    spawn(ourRoom) {
+        let rooms = _.filter(Game.rooms, (room) => room.name === ourRoom);
+
+        if (rooms.length) {
+            super.spawn(ourRoom);
+        }
+    }
+
+    init() {
+        _.forEach(this.creeps, this.run);
+    }
+}
+
+module.exports = RoleBuilder;

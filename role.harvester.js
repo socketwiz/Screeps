@@ -1,24 +1,22 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('role.harvester');
- * mod.thing == 'a thing'; // true
- */
 
-var roleHarvester = {
+let BaseRole = require('role.base');
+
+class RoleHarvester extends BaseRole {
+    constructor(unit) {
+        let creeps = _.filter(Game.creeps, (creep) => creep.memory.role == unit.role);
+
+        super(unit);
+
+        this.creeps = creeps;
+        console.log(`${unit.role.capitalize()}s: ${creeps.length}`);
+    }
 
     /** @param {Creep} creep **/
-    'run': function moveHarvesterCreep(creep) {
+    run(creep) {
         if (creep.carry.energy < creep.carryCapacity) {
-            var sources = creep.room.find(FIND_SOURCES);
-
-            if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+            super.getResources(creep, false, '#ffffff');
         } else {
-            var targets = creep.room.find(FIND_STRUCTURES, {
+            let targets = creep.room.find(FIND_STRUCTURES, {
                 'filter': (structure) => {
                     return (structure.structureType == STRUCTURE_EXTENSION ||
                             structure.structureType == STRUCTURE_SPAWN ||
@@ -26,13 +24,44 @@ var roleHarvester = {
                 }
             });
 
+            // Deposit harvest
             if (targets.length > 0) {
                 if (creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+            } else {
+                // Check to see if there is a container we could fill
+                let container = creep.room.find(FIND_STRUCTURES, {
+                    'filter': (structure) => {
+                        return (structure.structureType == STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY] < structure.storeCapacity;
+                    }
+                });
+
+                if (container.length) {
+                    if (creep.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(container, {visualizePathStyle: {stroke: '#ffffff'}});
+                    }
+                } else {
+                    // Just get off the resource and park it back at the spawn
+                    targets = creep.room.find(FIND_STRUCTURES, {
+                        'filter': (structure) => {
+                            return (structure.structureType == STRUCTURE_SPAWN);
+                        }
+                    });
+
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             }
         }
     }
-};
 
-module.exports = roleHarvester;
+    spawn(unit) {
+        return super.spawn(unit);
+    }
+
+    init() {
+        _.forEach(this.creeps, this.run);
+    }
+}
+
+module.exports = RoleHarvester;

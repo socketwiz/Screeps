@@ -1,28 +1,45 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('role.upgrader');
- * mod.thing == 'a thing'; // true
- */
 
-var roleUpgrader = {
+let BaseRole = require('role.base');
+
+class RoleUpgrader extends BaseRole {
+    constructor(role, size) {
+        let creeps = _.filter(Game.creeps, (creep) => creep.memory.role == role);
+
+        super(creeps, role, size);
+
+        this.creeps = creeps;
+    }
 
     /** @param {Creep} creep **/
-    'run': function moveUpgraderCreep(creep) {
-        if (creep.carry.energy === 0) {
-            var sources = creep.room.find(FIND_SOURCES);
+    run(creep) {
+        var notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
 
-            if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[0]);
-            }
+        if (creep.memory.upgrading && creep.carry.energy == 0) {
+            creep.memory.upgrading = false;
+            creep.say('🔄 harvest');
+        }
+        if (!creep.memory.upgrading && creep.carry.energy == creep.carryCapacity) {
+            creep.memory.upgrading = true;
+            creep.say('⚡ upgrade');
+        }
+
+        // if (creep.carry.energy === 0) {
+        if (notNearController && creep.carry.energy < creep.carryCapacity) {
+            super.getResources(creep, true, '#29506d', 1);
+        } else if (creep.carry.energy) {
+            creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#29506d'}});
         } else {
-            if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(creep.room.controller);
-            }
+            super.getResources(creep, false, '#29506d', 1);
         }
     }
-};
 
-module.exports = roleUpgrader;
+    spawn(rooms) {
+        _.forEach(_.keys(rooms), super.spawn.bind(this));
+    }
+
+    init() {
+        _.forEach(this.creeps, this.run);
+    }
+}
+
+module.exports = RoleUpgrader;
