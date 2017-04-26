@@ -6,6 +6,7 @@ module.exports.loop = function gameLoop() {
 
     // let tower = Game.getObjectById('d78e235dfa65938db402f4f0');
     let tower = false;
+    let energyAvailable = 0;
 
     if (tower) {
         let closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
@@ -33,11 +34,13 @@ module.exports.loop = function gameLoop() {
 
     for (let room in Game.rooms) {
         if (Game.rooms.hasOwnProperty(room)) {
-            console.log(`Room "${room}" has ${Game.rooms[room].energyAvailable} energy`);
+            energeyAvailable = Game.rooms[room].energyAvailable;
+
+            console.log(`Room "${room}" has ${energeyAvailable} energy`);
         }
     }
 
-    room.run();
+    room.run(energeyAvailable);
 };
 
 // Game.spawns['SpawnDominator'].room.controller.activateSafeMode();

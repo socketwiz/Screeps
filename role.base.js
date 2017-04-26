@@ -13,6 +13,12 @@ class BaseRole {
         this.unit = unit;
     }
 
+    length() {
+        let units = _.filter(Game.creeps, (creep) => creep.memory.role == this.unit.role);
+
+        return units.length;
+    }
+
     /**
      * Return a list of the units that have been spawned onto this board
      *
@@ -35,17 +41,19 @@ class BaseRole {
      *
      * @returns {Boolean} - true if unit wasn't spawned, false if it was
      */
-    spawn() {
-        let units = _.filter(Game.creeps, (creep) => creep.memory.role == this.unit.role);
+    spawn(role, energyAvailable) {
+        let featureSet = this.unit.features.want;
+        let harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
 
-        if (this.unit.role === this.role && this.unit.count > units.length) {
-            let newCreep = Game.spawns['SpawnDominator'].createCreep(this.unit.features, undefined, {role: this.role});
-
-            console.log(`Spawning new ${this.role}: ${this.formatError(newCreep)}`);
-            return false;
+        if (energyAvailable < 551 && harvesters.length === 0) {
+            if (this.unit.features.need) {
+                featureSet = this.unit.features.need;
+            }
         }
 
-        return true;
+        let newCreep = Game.spawns['SpawnDominator'].createCreep(featureSet, undefined, {role: role});
+
+        console.log(`Spawning new ${role}: ${this.formatError(newCreep)}`);
     }
 
     /**
@@ -82,6 +90,8 @@ class BaseRole {
             return 'Busy';
         case ERR_NOT_ENOUGH_ENERGY:
             return 'Not enough energy';
+        case ERR_INVALID_ARGS:
+            return 'Invalid arguments';
         default:
             return error;
         }

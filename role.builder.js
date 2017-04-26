@@ -2,12 +2,13 @@
 let BaseRole = require('role.base');
 
 class RoleBuilder extends BaseRole {
-    constructor(role, size) {
-        let creeps = _.filter(Game.creeps, (creep) => creep.memory.role == role);
+    constructor(unit) {
+        let creeps = _.filter(Game.creeps, (creep) => creep.memory.role == unit.role);
 
-        super(creeps, role, size);
+        super(unit);
 
         this.creeps = creeps;
+        console.log(`${unit.role.capitalize()}s: ${creeps.length}`);
     }
 
     /** @param {Creep} creep **/
@@ -49,15 +50,11 @@ class RoleBuilder extends BaseRole {
         }
     }
 
-    spawn(ourRoom) {
-        let rooms = _.filter(Game.rooms, (room) => room.name === ourRoom);
-
-        if (rooms.length) {
-            super.spawn(ourRoom);
-        }
+    spawn(unit) {
+        super.spawn(unit);
     }
 
-    init() {
+    work() {
         _.forEach(this.creeps, this.run);
     }
 }

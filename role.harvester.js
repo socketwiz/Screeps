@@ -55,11 +55,15 @@ class RoleHarvester extends BaseRole {
         }
     }
 
-    spawn(unit) {
-        return super.spawn(unit);
+    length() {
+        return super.length();
     }
 
-    init() {
+    spawn(unit, energyAvailable) {
+        super.spawn(unit, energyAvailable);
+    }
+
+    work() {
         _.forEach(this.creeps, this.run);
     }
 }
