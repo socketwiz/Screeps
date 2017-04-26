@@ -36,6 +36,23 @@ class BaseRole {
         };
     }
 
+    depositToBanks(creep, color) {
+        let targets = creep.room.find(FIND_STRUCTURES, {
+            'filter': (structure) => {
+                return (structure.structureType == STRUCTURE_EXTENSION ||
+                        structure.structureType == STRUCTURE_SPAWN ||
+                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+            }
+        });
+
+        // Deposit harvest
+        if (targets.length > 0) {
+            if (creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(targets[0], {visualizePathStyle: {stroke: color}});
+            }
+        }
+    }
+
     /**
      * Spawn a creep
      *
@@ -45,11 +62,11 @@ class BaseRole {
         let featureSet = this.unit.features.want;
         let harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
 
-        if (energyAvailable < 551 && harvesters.length === 0) {
-            if (this.unit.features.need) {
-                featureSet = this.unit.features.need;
-            }
-        }
+        // if (energyAvailable < 601 && harvesters.length === 0) {
+        //     if (this.unit.features.need) {
+        //         featureSet = this.unit.features.need;
+        //     }
+        // }
 
         let newCreep = Game.spawns['SpawnDominator'].createCreep(featureSet, undefined, {role: role});
 

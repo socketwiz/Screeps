@@ -31,10 +31,10 @@ class Room {
                 this.units.harvester = new RoleHarvester(unit);
                 break;
             case 'upgrader':
-                this.units.upgrader = new RoleUpgrader(unit);
+            this.units.upgrader = new RoleUpgrader(unit, this.energyAvailable);
                 break;
             case 'builder':
-                this.units.builder = new RoleBuilder(unit);
+                this.units.builder = new RoleBuilder(unit, this.energyAvailable);
                 break;
         }
     }

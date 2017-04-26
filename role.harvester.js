@@ -7,6 +7,7 @@ class RoleHarvester extends BaseRole {
 
         super(unit);
 
+        this.color = '#FFFFFF';
         this.creeps = creeps;
         console.log(`${unit.role.capitalize()}s: ${creeps.length}`);
     }
@@ -14,7 +15,7 @@ class RoleHarvester extends BaseRole {
     /** @param {Creep} creep **/
     run(creep) {
         if (creep.carry.energy < creep.carryCapacity) {
-            super.getResources(creep, false, '#ffffff');
+            super.getResources(creep, false, this.color);
         } else {
             let targets = creep.room.find(FIND_STRUCTURES, {
                 'filter': (structure) => {
@@ -27,7 +28,7 @@ class RoleHarvester extends BaseRole {
             // Deposit harvest
             if (targets.length > 0) {
                 if (creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: this.color}});
                 }
             } else {
                 // Check to see if there is a container we could fill
@@ -39,7 +40,7 @@ class RoleHarvester extends BaseRole {
 
                 if (container.length) {
                     if (creep.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(container, {visualizePathStyle: {stroke: '#ffffff'}});
+                        creep.moveTo(container, {visualizePathStyle: {stroke: this.color}});
                     }
                 } else {
                     // Just get off the resource and park it back at the spawn
@@ -49,7 +50,7 @@ class RoleHarvester extends BaseRole {
                         }
                     });
 
-                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: this.color}});
                 }
             }
         }
@@ -64,7 +65,7 @@ class RoleHarvester extends BaseRole {
     }
 
     work() {
-        _.forEach(this.creeps, this.run);
+        _.forEach(this.creeps, this.run.bind(this));
     }
 }
 
