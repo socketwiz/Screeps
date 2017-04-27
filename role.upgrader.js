@@ -16,6 +16,13 @@ class RoleUpgrader extends BaseRole {
 
     /** @param {Creep} creep **/
     run(creep) {
+        let targets = creep.room.find(FIND_STRUCTURES, {
+            'filter': (structure) => {
+                return (structure.structureType == STRUCTURE_EXTENSION ||
+                        structure.structureType == STRUCTURE_SPAWN ||
+                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+            }
+        });
         let notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
 
         if (creep.memory.upgrading && creep.carry.energy == 0) {
@@ -32,7 +39,10 @@ class RoleUpgrader extends BaseRole {
             super.getResources(creep, true, this.color, 1);
         } else if (creep.carry.energy) {
             if (this.energyAvailable < 600) {
-                super.depositToBanks(creep, this.color);
+                let depositCurried = _.curry(super.depositToBanks);
+                let depositWithCreep = depositCurried(creep);
+
+                _.forEach(targets, depositWithCreep.bind(this));
             } else {
                 creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: this.color}});
             }

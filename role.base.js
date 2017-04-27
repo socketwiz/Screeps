@@ -36,20 +36,36 @@ class BaseRole {
         };
     }
 
-    depositToBanks(creep, color) {
-        let targets = creep.room.find(FIND_STRUCTURES, {
+    depositToBanks(creep, target) {
+        // Deposit harvest
+        if (target) {
+            if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
+            }
+        }
+    }
+
+    depositToContainers(creep) {
+        // Check to see if there is a container we could fill
+        let container = creep.room.find(FIND_STRUCTURES, {
             'filter': (structure) => {
-                return (structure.structureType == STRUCTURE_EXTENSION ||
-                        structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+                return (structure.structureType == STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY] < structure.storeCapacity;
             }
         });
 
-        // Deposit harvest
-        if (targets.length > 0) {
-            if (creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(targets[0], {visualizePathStyle: {stroke: color}});
+        if (container.length) {
+            if (creep.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(container, {visualizePathStyle: {stroke: this.color}});
             }
+        } else {
+            // Just get off the resource and park it back at the spawn
+            let targets = creep.room.find(FIND_STRUCTURES, {
+                'filter': (structure) => {
+                    return (structure.structureType == STRUCTURE_SPAWN);
+                }
+            });
+
+            creep.moveTo(targets[0], {visualizePathStyle: {stroke: this.color}});
         }
     }
 

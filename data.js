@@ -26,7 +26,7 @@ const DATA = {
                         'count': 2,
                         'features': {
                             'need': [WORK, CARRY, MOVE, MOVE],
-                            'want': [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+                            'want': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
                         },
                         'role': 'harvester'
                     },
@@ -34,7 +34,7 @@ const DATA = {
                         'priority': 2,
                         'count': 2,
                         'features': {
-                            'want': [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+                            'want': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
                         },
                         'role': 'upgrader'
                     },
@@ -42,7 +42,7 @@ const DATA = {
                         'priority': 3,
                         'count': 3,
                         'features': {
-                            'want': [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+                            'want': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
                         },
                         'role': 'builder'
                     }

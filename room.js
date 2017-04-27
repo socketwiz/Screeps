@@ -42,13 +42,8 @@ class Room {
     spawn(unit) {
         let currentUnit = this.units[unit.role];
 
-        switch (unit.priority) {
-            case 1:
-            case 2:
-            case 3:
-                if (unit.count > currentUnit.length()) {
-                    currentUnit.spawn(unit.role, this.energyAvailable);
-                }
+        if (unit.count > currentUnit.length()) {
+            currentUnit.spawn(unit.role, this.energyAvailable);
         }
 
         return unit.count === currentUnit.length();

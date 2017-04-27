@@ -14,8 +14,30 @@ class RoleBuilder extends BaseRole {
         console.log(`${unit.role.capitalize()}s: ${creeps.length}`);
     }
 
+    needRepair(structure) {
+        return structure.hits < structure.hitsMax;
+    }
+
+    repair(creep, structure) {
+        if (structure.hits < structure.hitsMax) {
+            let notNearStructure = creep.repair(structure) === ERR_NOT_IN_RANGE;
+
+            if (notNearStructure) {
+                creep.moveTo(structure, {visualizePathStyle: {stroke: this.color}});
+            }
+        }
+    }
+
     /** @param {Creep} creep **/
     run(creep) {
+        let targets = creep.room.find(FIND_STRUCTURES, {
+            'filter': (structure) => {
+                return (structure.structureType == STRUCTURE_EXTENSION ||
+                        structure.structureType == STRUCTURE_SPAWN ||
+                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+            }
+        });
+
         if (creep.memory.building && creep.carry.energy === 0) {
             creep.memory.building = false;
             creep.say('🔄 harvest');
@@ -27,20 +49,30 @@ class RoleBuilder extends BaseRole {
 
         if (creep.memory.building) {
             if (this.energyAvailable < 600) {
-                super.depositToBanks(creep, this.color);
-            } else {
-                var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+                let depositCurried = _.curry(super.depositToBanks);
+                let depositWithCreep = depositCurried(creep);
 
-                if (targets.length) {
-                    var target = targets[0];
-                    // var target = Game.getObjectById('58fb7ae8b10571061ceaed4b');
+                _.forEach(targets, depositWithCreep.bind(this));
+            } else {
+                let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
+                let structures = creep.room.find(FIND_STRUCTURES);
+                let needRepairs = _.filter(structures, this.needRepair);
+
+                if (constructionSites.length) {
+                    let target = constructionSites[0];
+                    // let target = Game.getObjectById('58fb7ae8b10571061ceaed4b');
 
                     if (creep.build(target) === ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
                     }
+                } else if (structures.length && needRepairs.length) {
+                    let repairCurried = _.curry(this.repair);
+                    let repairWithCreep = repairCurried(creep);
+                    _.forEach(structures, repairWithCreep.bind(this));
                 } else {
+
                     // Do upgrade while waiting for something else to build
-                    var notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
+                    let notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
 
                     if (notNearController && creep.carry.energy < creep.carryCapacity) {
                         super.getResources(creep, true, this.color, 1);
