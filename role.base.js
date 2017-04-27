@@ -152,14 +152,14 @@ class BaseRole {
      */
     formatError(error) {
         switch (error) {
-        case ERR_BUSY:
-            return 'Busy';
-        case ERR_NOT_ENOUGH_ENERGY:
-            return 'Not enough energy';
-        case ERR_INVALID_ARGS:
-            return 'Invalid arguments';
-        default:
-            return error;
+            case ERR_BUSY:
+                return 'Busy';
+            case ERR_NOT_ENOUGH_ENERGY:
+                return 'Not enough energy';
+            case ERR_INVALID_ARGS:
+                return 'Invalid arguments';
+            default:
+                return error;
         }
     }
 }
