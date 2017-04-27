@@ -38,7 +38,7 @@ class RoleUpgrader extends BaseRole {
         if (notNearController && creep.carry.energy === 0) {
             super.getResources(creep, true, this.color, 1);
         } else if (creep.carry.energy) {
-            if (this.energyAvailable < 600) {
+            if (this.energyAvailable < 800) {
                 let depositCurried = _.curry(super.depositToBanks);
                 let depositWithCreep = depositCurried(creep);
 

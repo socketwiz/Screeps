@@ -48,7 +48,7 @@ class RoleBuilder extends BaseRole {
         }
 
         if (creep.memory.building) {
-            if (this.energyAvailable < 600) {
+            if (this.energyAvailable < 800) {
                 let depositCurried = _.curry(super.depositToBanks);
                 let depositWithCreep = depositCurried(creep);
 

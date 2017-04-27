@@ -28,8 +28,11 @@ class RoleHarvester extends BaseRole {
             let depositCurried = _.curry(super.depositToBanks);
             let depositWithCreep = depositCurried(creep);
 
-            _.forEach(targets, depositWithCreep.bind(this));
-            super.depositToContainers(creep);
+            if (targets.length) {
+                _.forEach(targets, depositWithCreep.bind(this));
+            } else {
+                super.depositToContainers(creep);
+            }
         }
     }
 
