@@ -32,7 +32,6 @@ class RoleUpgrader extends BaseRole {
             creep.say('⚡ upgrade');
         }
 
-        // if (notNearController && creep.carry.energy < creep.carryCapacity) {
         if (notNearController && creep.carry.energy === 0) {
             super.getResources(creep, true, this.color, 1);
         } else if (creep.carry.energy) {
@@ -44,13 +43,6 @@ class RoleUpgrader extends BaseRole {
         } else {
             super.getResources(creep, false, this.color, 1);
         }
-    }
-
-    /**
-     * Spawn a creep
-     */
-    spawn() {
-        super.spawn();
     }
 
     /**

@@ -17,16 +17,6 @@ class RoleBuilder extends BaseRole {
     }
 
     /**
-     * Return whether or not given structure needs repair or not
-     *
-     * @param {Object} structure - structure to look at for repair details
-     * @returns {Boolean} - true if structure needs repair
-     */
-    needRepair(structure) {
-        return structure.hits < structure.hitsMax;
-    }
-
-    /**
      * Repair a structure
      *
      * @param {Object} - creep that will repair structure
@@ -62,7 +52,7 @@ class RoleBuilder extends BaseRole {
             } else {
                 let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
                 let structures = creep.room.find(FIND_STRUCTURES);
-                let needRepairs = _.filter(structures, this.needRepair);
+                let needRepairs = _.filter(structures, structure => structure.hits < structure.hitsMax);
 
                 if (constructionSites.length) {
                     // Construct sites
@@ -92,13 +82,6 @@ class RoleBuilder extends BaseRole {
         } else {
             super.getResources(creep, false, this.color, 1);
         }
-    }
-
-    /**
-     * Spawn a creep
-     */
-    spawn() {
-        super.spawn();
     }
 
     /**

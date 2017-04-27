@@ -25,23 +25,6 @@ class BaseRole {
     }
 
     /**
-     * Return a list of the units that have been spawned onto this board
-     *
-     * @return {Object} - units that have been spawned and their counts
-     */
-    whosOnBoard() {
-        let harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-        let builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
-        let upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
-
-        return {
-            'harvesters': harvesters.length,
-            'builders': builders.length,
-            'upgraders': upgraders.length
-        };
-    }
-
-    /**
      * Deposit into into one of type extension, spawn, or tower
      *
      * @param {Object} creep - creep that has energy to deposit

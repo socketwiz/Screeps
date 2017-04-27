@@ -64,7 +64,7 @@ class Room {
         let currentUnit = this.units[unit.role];
 
         if (unit.count > currentUnit.length()) {
-            currentUnit.spawn(unit.role, this.energyAvailable);
+            currentUnit.spawn();
         }
     }
 
