@@ -22,28 +22,18 @@ const DATA = {
 
                 'units': [
                     {
-                        'priority': 1,
                         'count': 2,
-                        'features': {
-                            'need': [WORK, CARRY, MOVE, MOVE],
-                            'want': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
-                        },
+                        'features': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
                         'role': 'harvester'
                     },
                     {
-                        'priority': 2,
-                        'count': 2,
-                        'features': {
-                            'want': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
-                        },
+                        'count': 3,
+                        'features': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
                         'role': 'upgrader'
                     },
                     {
-                        'priority': 3,
                         'count': 3,
-                        'features': {
-                            'want': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
-                        },
+                        'features': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
                         'role': 'builder'
                     }
                 ]

@@ -34,13 +34,13 @@ module.exports.loop = function gameLoop() {
 
     for (let room in Game.rooms) {
         if (Game.rooms.hasOwnProperty(room)) {
-            energeyAvailable = Game.rooms[room].energyAvailable;
+            energyAvailable = Game.rooms[room].energyAvailable;
 
-            console.log(`Room "${room}" has ${energeyAvailable} energy`);
+            console.log(`Room "${room}" has ${energyAvailable} energy`);
         }
     }
 
-    room.run(energeyAvailable);
+    room.run(energyAvailable);
 };
 
 // Game.spawns['SpawnDominator'].room.controller.activateSafeMode();

@@ -14,7 +14,10 @@ class RoleUpgrader extends BaseRole {
         console.log(`${unit.role.capitalize()}s: ${creeps.length}`);
     }
 
-    /** @param {Creep} creep **/
+    /** Work for a single creep to perform
+     *
+     * @param {Object} creep - the creep to send to the node
+     */
     run(creep) {
         let targets = creep.room.find(FIND_STRUCTURES, {
             'filter': (structure) => {
@@ -51,10 +54,19 @@ class RoleUpgrader extends BaseRole {
         }
     }
 
-    spawn(unit) {
-        super.spawn(unit);
+    /**
+     * Spawn a creep
+     *
+     * @param {Object} unit - the creep definition to build
+     * @param {Number} energyAvailable - amount of energy available to the room
+     */
+    spawn(unit, energyAvailable) {
+        super.spawn(unit, energyAvailable);
     }
 
+    /**
+     * Find something for the group of harvesters to do
+     */
     work() {
         _.forEach(this.creeps, this.run.bind(this));
     }

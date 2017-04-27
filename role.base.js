@@ -13,6 +13,11 @@ class BaseRole {
         this.unit = unit;
     }
 
+    /**
+     * Returns how many creeps there are of this particular role
+     *
+     * @returns {Number} - number of creeps of role
+     */
     length() {
         let units = _.filter(Game.creeps, (creep) => creep.memory.role == this.unit.role);
 
@@ -36,6 +41,12 @@ class BaseRole {
         };
     }
 
+    /**
+     * Deposit into into one of type extension, spawn, or tower
+     *
+     * @param {Object} creep - creep that has energy to deposit
+     * @param {Object} target - one of extension, spawn or tower
+     */
     depositToBanks(creep, target) {
         // Deposit harvest
         if (target) {
@@ -45,15 +56,14 @@ class BaseRole {
         }
     }
 
-    depositToContainers(creep) {
-        // Check to see if there is a container we could fill
-        let container = creep.room.find(FIND_STRUCTURES, {
-            'filter': (structure) => {
-                return (structure.structureType == STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY] < structure.storeCapacity;
-            }
-        });
-
-        if (container.length) {
+    /**
+     * Deposit energy into a container
+     *
+     * @param {Object} creep - creep that has energy to deposit
+     * @param {Object} container - container to deposit into
+     */
+    depositToContainer(creep, container) {
+        if (_.isEmpty(container) === false) {
             if (creep.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(container, {visualizePathStyle: {stroke: this.color}});
             }
@@ -70,19 +80,33 @@ class BaseRole {
     }
 
     /**
+     * Find a list of containers to deposit into
+     * 
+     * @param {Object} creep - creep that has energy to deposit
+     */
+    depositToContainers(creep) {
+        // Check to see if there is a container we could fill
+        let containers = creep.room.find(FIND_STRUCTURES, {
+            'filter': (structure) => {
+                return (structure.structureType == STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY] < structure.storeCapacity;
+            }
+        });
+
+        let depositToContainerCurried = _.curry(this.depositToContainer);
+        let depositToContainerWithCreep = depositToContainerCurried(creep);
+
+        _.forEach(containers, depositToContainerWithCreep);
+    }
+
+    /**
      * Spawn a creep
      *
-     * @returns {Boolean} - true if unit wasn't spawned, false if it was
+     * @param {Object} unit - the creep definition to build
+     * @param {Number} energyAvailable - amount of energy available to the room
      */
     spawn(role, energyAvailable) {
-        let featureSet = this.unit.features.want;
+        let featureSet = this.unit.features;
         let harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-
-        // if (energyAvailable < 601 && harvesters.length === 0) {
-        //     if (this.unit.features.need) {
-        //         featureSet = this.unit.features.need;
-        //     }
-        // }
 
         let newCreep = Game.spawns['SpawnDominator'].createCreep(featureSet, undefined, {role: role});
 
@@ -90,7 +114,7 @@ class BaseRole {
     }
 
     /**
-     * Move creeps to resource nodes
+     * Find the list of energy sources and move creep to one
      *
      * @param {Object} creep - the creep to send to the node
      * @param {Boolean} closest - send to closest node if true

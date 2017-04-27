@@ -12,7 +12,19 @@ class RoleHarvester extends BaseRole {
         console.log(`${unit.role.capitalize()}s: ${creeps.length}`);
     }
 
-    /** @param {Creep} creep **/
+    /**
+     * Returns how many creeps there are of this particular role
+     *
+     * @returns {Number} - number of creeps of role
+     */
+    length() {
+        return super.length();
+    }
+
+    /** Work for a single creep to perform
+     *
+     * @param {Object} creep - the creep to send to the node
+     */
     run(creep) {
         if (creep.carry.energy < creep.carryCapacity) {
             super.getResources(creep, false, this.color);
@@ -36,14 +48,19 @@ class RoleHarvester extends BaseRole {
         }
     }
 
-    length() {
-        return super.length();
-    }
-
+    /**
+     * Spawn a creep
+     *
+     * @param {Object} unit - the creep definition to build
+     * @param {Number} energyAvailable - amount of energy available to the room
+     */
     spawn(unit, energyAvailable) {
         super.spawn(unit, energyAvailable);
     }
 
+    /**
+     * Find something for the group of harvesters to do
+     */
     work() {
         _.forEach(this.creeps, this.run.bind(this));
     }
