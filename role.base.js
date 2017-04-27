@@ -39,6 +39,12 @@ class BaseRole {
         }
     }
 
+    /**
+     * Find a list of "banks" (extensions, spawns, or towers) to deposit into
+     *
+     * @param {Object} creep - creep that has energy to deposit
+     * @returns {Boolean} - true if there are structures that need a deposit
+     */
     depositToBanks(creep) {
         let targets = creep.room.find(FIND_STRUCTURES, {
             'filter': (structure) => {
@@ -76,7 +82,7 @@ class BaseRole {
 
     /**
      * Find a list of containers to deposit into
-     * 
+     *
      * @param {Object} creep - creep that has energy to deposit
      */
     depositToContainers(creep) {

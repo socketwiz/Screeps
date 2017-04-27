@@ -32,7 +32,8 @@ class RoleBuilder extends BaseRole {
         }
     }
 
-    /** Work for a single creep to perform
+    /**
+     * Work for a single creep to perform
      *
      * @param {Object} creep - the creep to send to the node
      */
