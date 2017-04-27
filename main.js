@@ -34,7 +34,9 @@ module.exports.loop = function gameLoop() {
 
     for (let room in Game.rooms) {
         if (Game.rooms.hasOwnProperty(room)) {
-            energyAvailable = Game.rooms[room].energyAvailable;
+            let roomEnergy = Game.rooms[room].energyAvailable;
+
+            energyAvailable += roomEnergy;
 
             console.log(`Room "${room}" has ${energyAvailable} energy`);
         }

@@ -2,13 +2,17 @@
 let BaseRole = require('role.base');
 
 class RoleHarvester extends BaseRole {
-    constructor(unit) {
+    constructor(props) {
+        let unit = props.unit;
         let creeps = _.filter(Game.creeps, (creep) => creep.memory.role == unit.role);
 
-        super(unit);
+        super(props);
 
         this.color = '#FFFFFF';
         this.creeps = creeps;
+        this.energyAvailable = props.energyAvailable;
+        this.unit = unit;
+
         console.log(`${unit.role.capitalize()}s: ${creeps.length}`);
     }
 
@@ -29,20 +33,7 @@ class RoleHarvester extends BaseRole {
         if (creep.carry.energy < creep.carryCapacity) {
             super.getResources(creep, false, this.color);
         } else {
-            let targets = creep.room.find(FIND_STRUCTURES, {
-                'filter': (structure) => {
-                    return (structure.structureType == STRUCTURE_EXTENSION ||
-                            structure.structureType == STRUCTURE_SPAWN ||
-                            structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
-                }
-            });
-
-            let depositCurried = _.curry(super.depositToBanks);
-            let depositWithCreep = depositCurried(creep);
-
-            if (targets.length) {
-                _.forEach(targets, depositWithCreep.bind(this));
-            } else {
+            if (super.depositToBanks(creep) === false) {
                 super.depositToContainers(creep);
             }
         }
@@ -50,12 +41,9 @@ class RoleHarvester extends BaseRole {
 
     /**
      * Spawn a creep
-     *
-     * @param {Object} unit - the creep definition to build
-     * @param {Number} energyAvailable - amount of energy available to the room
      */
-    spawn(unit, energyAvailable) {
-        super.spawn(unit, energyAvailable);
+    spawn() {
+        super.spawn();
     }
 
     /**

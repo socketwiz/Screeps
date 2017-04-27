@@ -9,8 +9,8 @@ String.prototype.capitalize = function capitalize() {
 };
 
 class BaseRole {
-    constructor(unit) {
-        this.unit = unit;
+    constructor(props) {
+        this.unit = props.unit;
     }
 
     /**
@@ -47,12 +47,33 @@ class BaseRole {
      * @param {Object} creep - creep that has energy to deposit
      * @param {Object} target - one of extension, spawn or tower
      */
-    depositToBanks(creep, target) {
+    depositToBank(creep, target) {
         // Deposit harvest
         if (target) {
             if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
             }
+        }
+    }
+
+    depositToBanks(creep) {
+        let targets = creep.room.find(FIND_STRUCTURES, {
+            'filter': (structure) => {
+                return (structure.structureType == STRUCTURE_EXTENSION ||
+                        structure.structureType == STRUCTURE_SPAWN ||
+                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+            }
+        });
+
+        let depositCurried = _.curry(this.depositToBank);
+        let depositWithCreep = depositCurried(creep);
+
+        if (targets.length) {
+            _.forEach(targets, depositWithCreep.bind(this));
+
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -67,15 +88,6 @@ class BaseRole {
             if (creep.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(container, {visualizePathStyle: {stroke: this.color}});
             }
-        } else {
-            // Just get off the resource and park it back at the spawn
-            let targets = creep.room.find(FIND_STRUCTURES, {
-                'filter': (structure) => {
-                    return (structure.structureType == STRUCTURE_SPAWN);
-                }
-            });
-
-            creep.moveTo(targets[0], {visualizePathStyle: {stroke: this.color}});
         }
     }
 
@@ -95,22 +107,30 @@ class BaseRole {
         let depositToContainerCurried = _.curry(this.depositToContainer);
         let depositToContainerWithCreep = depositToContainerCurried(creep);
 
-        _.forEach(containers, depositToContainerWithCreep);
+        if (containers.length) {
+            _.forEach(containers, depositToContainerWithCreep);
+        } else {
+            // Just get off the resource and park it back at the spawn
+            let targets = creep.room.find(FIND_STRUCTURES, {
+                'filter': (structure) => {
+                    return (structure.structureType == STRUCTURE_SPAWN);
+                }
+            });
+
+            creep.moveTo(targets[0], {visualizePathStyle: {stroke: this.color}});
+        }
     }
 
     /**
      * Spawn a creep
-     *
-     * @param {Object} unit - the creep definition to build
-     * @param {Number} energyAvailable - amount of energy available to the room
      */
-    spawn(role, energyAvailable) {
+    spawn() {
         let featureSet = this.unit.features;
         let harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
 
-        let newCreep = Game.spawns['SpawnDominator'].createCreep(featureSet, undefined, {role: role});
+        let newCreep = Game.spawns['SpawnDominator'].createCreep(featureSet, undefined, {role: this.unit.role});
 
-        console.log(`Spawning new ${role}: ${this.formatError(newCreep)}`);
+        console.log(`Spawning new ${this.unit.role}: ${this.formatError(newCreep)}`);
     }
 
     /**

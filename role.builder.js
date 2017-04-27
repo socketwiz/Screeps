@@ -2,14 +2,16 @@
 let BaseRole = require('role.base');
 
 class RoleBuilder extends BaseRole {
-    constructor(unit, energyAvailable) {
+    constructor(props) {
+        let unit = props.unit;
         let creeps = _.filter(Game.creeps, (creep) => creep.memory.role == unit.role);
 
-        super(unit);
+        super(props);
 
         this.color = '#29506D';
         this.creeps = creeps;
-        this.energyAvailable = energyAvailable;
+        this.energyAvailable = props.energyAvailable;
+        this.unit = unit;
 
         console.log(`${unit.role.capitalize()}s: ${creeps.length}`);
     }
@@ -45,14 +47,6 @@ class RoleBuilder extends BaseRole {
      * @param {Object} creep - the creep to send to the node
      */
     run(creep) {
-        let targets = creep.room.find(FIND_STRUCTURES, {
-            'filter': (structure) => {
-                return (structure.structureType == STRUCTURE_EXTENSION ||
-                        structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
-            }
-        });
-
         if (creep.memory.building && creep.carry.energy === 0) {
             creep.memory.building = false;
             creep.say('🔄 harvest');
@@ -64,29 +58,26 @@ class RoleBuilder extends BaseRole {
 
         if (creep.memory.building) {
             if (this.energyAvailable < 800) {
-                let depositCurried = _.curry(super.depositToBanks);
-                let depositWithCreep = depositCurried(creep);
-
-                _.forEach(targets, depositWithCreep.bind(this));
+                super.depositToBanks(creep);
             } else {
                 let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
                 let structures = creep.room.find(FIND_STRUCTURES);
                 let needRepairs = _.filter(structures, this.needRepair);
 
                 if (constructionSites.length) {
+                    // Construct sites
                     let target = constructionSites[0];
-                    // let target = Game.getObjectById('58fb7ae8b10571061ceaed4b');
 
                     if (creep.build(target) === ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
                     }
                 } else if (structures.length && needRepairs.length) {
+                    // Repair structures
                     let repairCurried = _.curry(this.repair);
                     let repairWithCreep = repairCurried(creep);
                     _.forEach(structures, repairWithCreep.bind(this));
                 } else {
-
-                    // Do upgrade while waiting for something else to build
+                    // Do upgrade while waiting for something else to build or repair
                     let notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
 
                     if (notNearController && creep.carry.energy < creep.carryCapacity) {
@@ -105,12 +96,9 @@ class RoleBuilder extends BaseRole {
 
     /**
      * Spawn a creep
-     *
-     * @param {Object} unit - the creep definition to build
-     * @param {Number} energyAvailable - amount of energy available to the room
      */
-    spawn(unit, energyAvailable) {
-        super.spawn(unit, energyAvailable);
+    spawn() {
+        super.spawn();
     }
 
     /**
