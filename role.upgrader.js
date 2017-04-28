@@ -23,8 +23,6 @@ class RoleUpgrader extends BaseRole {
      * @param {Object} creep - the creep to put to work
      */
     run(creep) {
-        let notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
-
         if (creep.memory.upgrading && creep.carry.energy == 0) {
             creep.memory.upgrading = false;
             creep.say('🔄 harvest');
@@ -39,13 +37,9 @@ class RoleUpgrader extends BaseRole {
                 // All hands on deck when energy is below max
                 super.depositToBanks(creep);
             } else {
-                if (notNearController && creep.carry.energy === 0) {
-                    super.getResources(creep, true, this.color, 1);
-                } else if (creep.carry.energy) {
+                if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
                     // Do main job, upgrade the controller
                     creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: this.color}});
-                } else {
-                    super.getResources(creep, false, this.color, 1);
                 }
             }
         } else {
