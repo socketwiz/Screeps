@@ -5,7 +5,9 @@
  * @return {String} - the capitalized word
  */
 String.prototype.capitalize = function capitalize() {
-    return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+    return this.replace(/(?:^|\s)\S/g, function capitalizeWord(word) {
+        return word.toUpperCase();
+    });
 };
 
 class BaseRole {
@@ -89,7 +91,8 @@ class BaseRole {
         // Check to see if there is a container we could fill
         let containers = creep.room.find(FIND_STRUCTURES, {
             'filter': (structure) => {
-                return (structure.structureType == STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY] < structure.storeCapacity;
+                return (structure.structureType == STRUCTURE_CONTAINER) &&
+                    structure.store[RESOURCE_ENERGY] < structure.storeCapacity;
             }
         });
 
@@ -115,8 +118,6 @@ class BaseRole {
      */
     spawn() {
         let featureSet = this.unit.features;
-        let harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-
         let newCreep = Game.spawns['SpawnDominator'].createCreep(featureSet, undefined, {role: this.unit.role});
 
         console.log(`Spawning new ${this.unit.role}: ${this.formatError(newCreep)}`);

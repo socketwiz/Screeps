@@ -13,7 +13,7 @@ class RoleBuilder extends BaseRole {
         this.energyAvailable = props.energyAvailable;
         this.unit = unit;
 
-        console.log(`${unit.role.capitalize()}s: ${creeps.length}`);
+        console.log(`${unit.role.capitalize()}s: ${creeps.length}/${unit.count}`);
     }
 
     /**
