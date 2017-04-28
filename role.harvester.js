@@ -19,7 +19,7 @@ class RoleHarvester extends BaseRole {
     /**
      * Work for a single creep to perform
      *
-     * @param {Object} creep - the creep to send to the node
+     * @param {Object} creep - the creep to put to work
      */
     run(creep) {
         if (creep.carry.energy < creep.carryCapacity) {

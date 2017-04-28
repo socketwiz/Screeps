@@ -36,7 +36,7 @@ class RoleBuilder extends BaseRole {
     /**
      * Work for a single creep to perform
      *
-     * @param {Object} creep - the creep to send to the node
+     * @param {Object} creep - the creep to put to work
      */
     run(creep) {
         if (creep.memory.building && creep.carry.energy === 0) {
@@ -50,6 +50,7 @@ class RoleBuilder extends BaseRole {
 
         if (creep.memory.building) {
             if (this.energyAvailable < this.energyCapacityAvailable) {
+                // All hands on deck when energy is below max
                 super.depositToBanks(creep);
             } else {
                 let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
@@ -57,7 +58,7 @@ class RoleBuilder extends BaseRole {
                 let needRepairs = _.filter(structures, structure => structure.hits < structure.hitsMax);
 
                 if (constructionSites.length) {
-                    // Construct sites
+                    // Do main job, build stuff
                     let target = constructionSites[0];
 
                     if (creep.build(target) === ERR_NOT_IN_RANGE) {
@@ -67,7 +68,7 @@ class RoleBuilder extends BaseRole {
                     // Repair structures
                     let repairCurried = _.curry(this.repair);
                     let repairWithCreep = repairCurried(creep);
-                    _.forEach(structures, repairWithCreep.bind(this));
+                    _.forEach(structures, repairWithCreep);
                 } else {
                     // Do upgrade while waiting for something else to build or repair
                     let notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
@@ -87,7 +88,7 @@ class RoleBuilder extends BaseRole {
     }
 
     /**
-     * Find something for the group of harvesters to do
+     * Find something for the group of builders to do
      */
     work() {
         _.forEach(this.creeps, this.run.bind(this));
