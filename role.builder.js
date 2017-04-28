@@ -71,14 +71,8 @@ class RoleBuilder extends BaseRole {
                     _.forEach(structures, repairWithCreep);
                 } else {
                     // Do upgrade while waiting for something else to build or repair
-                    let notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
-
-                    if (notNearController && creep.carry.energy < creep.carryCapacity) {
-                        super.getResources(creep, true, this.color, 1);
-                    } else if (creep.carry.energy) {
+                    if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
                         creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: this.color}});
-                    } else {
-                        super.getResources(creep, false, this.color, 1);
                     }
                 }
             }
