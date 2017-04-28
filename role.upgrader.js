@@ -11,6 +11,7 @@ class RoleUpgrader extends BaseRole {
         this.color = '#FFAA00';
         this.creeps = creeps;
         this.energyAvailable = props.energyAvailable;
+        this.energyCapacityAvailable = props.energyCapacityAvailable;
         this.unit = unit;
 
         console.log(`${unit.role.capitalize()}s: ${creeps.length}/${unit.count}`);
@@ -36,7 +37,7 @@ class RoleUpgrader extends BaseRole {
         if (notNearController && creep.carry.energy === 0) {
             super.getResources(creep, true, this.color, 1);
         } else if (creep.carry.energy) {
-            if (this.energyAvailable < 800) {
+            if (this.energyAvailable < this.energyCapacityAvailable) {
                 super.depositToBanks(creep);
             } else {
                 creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: this.color}});

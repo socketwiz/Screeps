@@ -11,6 +11,7 @@ class RoleBuilder extends BaseRole {
         this.color = '#29506D';
         this.creeps = creeps;
         this.energyAvailable = props.energyAvailable;
+        this.energyCapacityAvailable = props.energyCapacityAvailable;
         this.unit = unit;
 
         console.log(`${unit.role.capitalize()}s: ${creeps.length}/${unit.count}`);
@@ -48,7 +49,7 @@ class RoleBuilder extends BaseRole {
         }
 
         if (creep.memory.building) {
-            if (this.energyAvailable < 800) {
+            if (this.energyAvailable < this.energyCapacityAvailable) {
                 super.depositToBanks(creep);
             } else {
                 let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);

@@ -7,28 +7,12 @@ let RoleBuilder = require('role.builder');
 class Room {
     constructor() {
         this.energyAvailable = 0;
+        this.energyCapacityAvailable = 0;
         this.units = {
             'harvester': undefined,
             'upgrader': undefined,
             'builder': undefined
         };
-    }
-
-    /**
-     * Check to see if this is a room we own
-     *
-     * @param {Object} room - room to check
-     * @returns {Boolean} - true if our room
-     */
-    isValid(room) {
-        let rooms = _.filter(Game.rooms, (gameRoom) => gameRoom.name === room);
-
-        if (rooms.length) {
-            return true;
-        }
-
-        console.log(`${room} does not belong to us`);
-        return false;
     }
 
     /**
@@ -39,7 +23,8 @@ class Room {
     setup(unit) {
         let props = {
             unit,
-            'energyAvailable': this.energyAvailable
+            'energyAvailable': this.energyAvailable,
+            'energyCapacityAvailable': this.energyCapacityAvailable
         };
 
         switch (unit.role) {
@@ -90,7 +75,7 @@ class Room {
         let roomSet = _.filter(data.rooms, (value) => _.keys(value) == room);
         let units = roomSet[0][room].units;
 
-        if (this.isValid(room)) {
+        if (_.isEmpty(units) === false) {
             _.forEach(units, this.setup.bind(this));
             _.forEach(units, this.spawn.bind(this));
             _.forEach(units, this.work.bind(this));
@@ -98,23 +83,16 @@ class Room {
     }
 
     /**
-     * Dispatch the work per room
-     *
-     * @param {Array} rooms - room to dispatch work to
-     */
-    rooms(rooms) {
-        _.forEach(_.keys(rooms), this.room.bind(this));
-    }
-
-    /**
      * For each room, put creeps to work
      *
      * @param {Number} energyAvailable - amount of energy available per room
+     * @param {Number} energyCapacityAvailable - max capacity available
      */
-    run(energyAvailable) {
+    run(room, energyAvailable, energyCapacityAvailable) {
         this.energyAvailable = energyAvailable;
+        this.energyCapacityAvailable = energyCapacityAvailable;
 
-        _.forEach(data.rooms, this.rooms.bind(this));
+        this.room(room);
     }
 }
 

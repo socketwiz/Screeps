@@ -13,6 +13,8 @@ String.prototype.capitalize = function capitalize() {
 class BaseRole {
     constructor(props) {
         this.unit = props.unit;
+        this.energyAvailable = props.energyAvailable;
+        this.energyCapacityAvailable = props.energyCapacityAvailable;
     }
 
     /**
@@ -51,8 +53,8 @@ class BaseRole {
         let targets = creep.room.find(FIND_STRUCTURES, {
             'filter': (structure) => {
                 return (structure.structureType == STRUCTURE_EXTENSION ||
-                        structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+                        structure.structureType == STRUCTURE_SPAWN
+                        ) && structure.energy < structure.energyCapacity;
             }
         });
 
@@ -113,6 +115,14 @@ class BaseRole {
         }
     }
 
+    withdrawFromContainer(creep, container) {
+        if (_.isEmpty(container) === false) {
+            if (creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(container, {visualizePathStyle: {stroke: this.color}});
+            }
+        }
+    }
+
     /**
      * Spawn a creep
      */
@@ -134,13 +144,24 @@ class BaseRole {
     getResources(creep, closest, color, id = 0) {
         var source = creep.pos.findClosestByRange(FIND_SOURCES);
         var sources = creep.room.find(FIND_SOURCES);
+        let containers = creep.room.find(FIND_STRUCTURES, {
+            'filter': (structure) => {
+                return (structure.structureType == STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY];
+            }
+        });
         var currentSource = sources[id];
 
         if (closest) {
             currentSource = source;
         }
 
-        if (creep.harvest(currentSource) === ERR_NOT_IN_RANGE) {
+        if (containers.length &&
+           this.energyAvailable !== this.energyCapacityAvailable) {
+            let withdrawFromContainerCurried = _.curry(this.withdrawFromContainer);
+            let withdrawFromContainerWithCreep = withdrawFromContainerCurried(creep);
+
+            _.forEach(containers, withdrawFromContainerWithCreep);
+        } else if (creep.harvest(currentSource) === ERR_NOT_IN_RANGE) {
             creep.moveTo(currentSource, {visualizePathStyle: {stroke: color}});
         }
     }
