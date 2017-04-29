@@ -26,7 +26,12 @@ class RoleHarvester extends BaseRole {
             super.getResources(creep, false, this.color);
         } else {
             if (super.depositToBanks(creep) === false) {
-                super.depositToContainers(creep);
+                if (super.depositToContainers(creep) === false) {
+                    // Do upgrade while waiting for something else to harvest
+                    if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: this.color}});
+                    }
+                }
             }
         }
     }

@@ -23,17 +23,17 @@ const DATA = {
                 'units': [
                     {
                         'count': 2,
-                        'features': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+                        'features': [TOUGH, TOUGH, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
                         'role': 'harvester'
                     },
                     {
                         'count': 3,
-                        'features': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+                        'features': [TOUGH, TOUGH, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
                         'role': 'upgrader'
                     },
                     {
                         'count': 3,
-                        'features': [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+                        'features': [TOUGH, TOUGH, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
                         'role': 'builder'
                     }
                 ]

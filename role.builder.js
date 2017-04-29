@@ -54,8 +54,10 @@ class RoleBuilder extends BaseRole {
                 super.depositToBanks(creep);
             } else {
                 let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
-                let structures = creep.room.find(FIND_STRUCTURES);
-                let needRepairs = _.filter(structures, structure => structure.hits < structure.hitsMax);
+                let damagedStructures = creep.room.find(FIND_STRUCTURES, {
+                    'filter': structure => structure.hits < structure.hitsMax &&
+                        structure.structureType !== STRUCTURE_RAMPART
+                });
 
                 if (constructionSites.length) {
                     // Do main job, build stuff
@@ -64,11 +66,11 @@ class RoleBuilder extends BaseRole {
                     if (creep.build(target) === ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
                     }
-                } else if (structures.length && needRepairs.length) {
+                } else if (damagedStructures.length) {
                     // Repair structures
                     let repairCurried = _.curry(this.repair);
                     let repairWithCreep = repairCurried(creep);
-                    _.forEach(structures, repairWithCreep);
+                    _.forEach(damagedStructures, repairWithCreep);
                 } else {
                     // Do upgrade while waiting for something else to build or repair
                     if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {

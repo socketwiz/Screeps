@@ -54,6 +54,28 @@ class Room {
     }
 
     /**
+     * Look for wounded soldiers to heal
+     *
+     * @param {Object} unit - unit definition
+     */
+    heal(unit) {
+        let currentUnit = this.units[unit.role];
+
+        currentUnit.heal();
+    }
+
+    /**
+     * Look for enemy creep to attack
+     *
+     * @param {Object} unit - unit definition
+     */
+    attack(unit) {
+        let currentUnit = this.units[unit.role];
+
+        currentUnit.attack();
+    }
+
+    /**
      * Put creep to work
      *
      * @param {Object} unit - unit definition
@@ -78,6 +100,8 @@ class Room {
         if (_.isEmpty(units) === false) {
             _.forEach(units, this.setup.bind(this));
             _.forEach(units, this.spawn.bind(this));
+            _.forEach(units, this.heal.bind(this));
+            _.forEach(units, this.attack.bind(this));
             _.forEach(units, this.work.bind(this));
         }
     }

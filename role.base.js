@@ -18,6 +18,53 @@ class BaseRole {
     }
 
     /**
+     * If there are any hostiles, attack!
+     *
+     * @param {Object} creep - creep used in the attack
+     */
+    attackWithCreep(creep) {
+        let closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+
+        if (closestHostile) {
+            creep.attack(closestHostile);
+        }
+    }
+
+    /**
+     * Check for hostiles to attack
+     */
+    attack() {
+        _.forEach(this.creeps, this.attackWithCreep.bind(this));
+    }
+
+    /**
+     * If there are any wounded soldiers heal them
+     *
+     * @param {Object} creep - creep used to heal
+     */
+    healWithCreep(creep) {
+        let closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+
+        if (closestHostile) {
+            creep.heal(closestHostile);
+        }
+        let woundedSoldier = creep.pos.findClosestByRange(FIND_CREEPS, {
+            'filter': (soldier) => soldier.hits < soldier.hitsMax
+        });
+
+        if (woundedSoldier) {
+            creep.repair(woundedSoldier);
+        }
+    }
+
+    /**
+     * Check for wounded soldiers to heal
+     */
+    heal() {
+        _.forEach(this.creeps, this.healWithCreep.bind(this));
+    }
+
+    /**
      * Returns how many creeps there are of this particular role
      *
      * @returns {Number} - number of creeps of role
@@ -29,13 +76,12 @@ class BaseRole {
     }
 
     /**
-     * Deposit into into one of type extension, spawn, or tower
+     * Deposit harvest into into target
      *
      * @param {Object} creep - creep that has energy to deposit
-     * @param {Object} target - one of extension, spawn or tower
+     * @param {Object} target - one of extension, spawn, container
      */
-    depositToBank(creep, target) {
-        // Deposit harvest
+    makeDeposit(creep, target) {
         if (target) {
             if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
@@ -58,30 +104,16 @@ class BaseRole {
             }
         });
 
-        let depositCurried = _.curry(this.depositToBank);
+        let depositCurried = _.curry(this.makeDeposit);
         let depositWithCreep = depositCurried(creep);
 
         if (targets.length) {
             _.forEach(targets, depositWithCreep.bind(this));
 
             return true;
-        } else {
-            return false;
         }
-    }
 
-    /**
-     * Deposit energy into a container
-     *
-     * @param {Object} creep - creep that has energy to deposit
-     * @param {Object} container - container to deposit into
-     */
-    depositToContainer(creep, container) {
-        if (_.isEmpty(container) === false) {
-            if (creep.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(container, {visualizePathStyle: {stroke: this.color}});
-            }
-        }
+        return false;
     }
 
     /**
@@ -98,21 +130,16 @@ class BaseRole {
             }
         });
 
-        let depositToContainerCurried = _.curry(this.depositToContainer);
-        let depositToContainerWithCreep = depositToContainerCurried(creep);
+        let depositCurried = _.curry(this.makeDeposit);
+        let depositWithCreep = depositCurried(creep);
 
         if (containers.length) {
-            _.forEach(containers, depositToContainerWithCreep);
-        } else {
-            // Just get off the resource and park it back at the spawn
-            let targets = creep.room.find(FIND_STRUCTURES, {
-                'filter': (structure) => {
-                    return (structure.structureType == STRUCTURE_SPAWN);
-                }
-            });
+            _.forEach(containers, depositWithCreep);
 
-            creep.moveTo(targets[0], {visualizePathStyle: {stroke: this.color}});
+            return true;
         }
+
+        return false;
     }
 
     withdrawFromContainer(creep, container) {
