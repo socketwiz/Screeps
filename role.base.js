@@ -43,11 +43,6 @@ class BaseRole {
      * @param {Object} creep - creep used to heal
      */
     healWithCreep(creep) {
-        let closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-
-        if (closestHostile) {
-            creep.heal(closestHostile);
-        }
         let woundedSoldier = creep.pos.findClosestByRange(FIND_CREEPS, {
             'filter': (soldier) => soldier.hits < soldier.hitsMax
         });
