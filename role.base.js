@@ -103,7 +103,7 @@ class BaseRole {
         let depositWithCreep = depositCurried(creep);
 
         if (targets.length) {
-            _.forEach(targets, depositWithCreep.bind(this));
+            _.forEach(targets, depositWithCreep);
 
             return true;
         }
@@ -137,6 +137,12 @@ class BaseRole {
         return false;
     }
 
+    /**
+     * Withdraw energy from a container
+     *
+     * @param {Object} creep - creep to withdraw
+     * @param {Object} container - container to withdraw from
+     */
     withdrawFromContainer(creep, container) {
         if (_.isEmpty(container) === false) {
             if (creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
