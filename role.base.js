@@ -120,7 +120,8 @@ class BaseRole {
         // Check to see if there is a container we could fill
         let containers = creep.room.find(FIND_STRUCTURES, {
             'filter': (structure) => {
-                return (structure.structureType == STRUCTURE_CONTAINER) &&
+                return (structure.structureType == STRUCTURE_CONTAINER ||
+                        structure.structureType === STRUCTURE_STORAGE) &&
                     structure.store[RESOURCE_ENERGY] < structure.storeCapacity;
             }
         });
@@ -174,7 +175,8 @@ class BaseRole {
         var sources = creep.room.find(FIND_SOURCES);
         let containers = creep.room.find(FIND_STRUCTURES, {
             'filter': (structure) => {
-                return (structure.structureType == STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY];
+                return (structure.structureType === STRUCTURE_CONTAINER ||
+                       structure.structureType === STRUCTURE_STORAGE) && structure.store[RESOURCE_ENERGY];
             }
         });
         var currentSource = sources[id];
