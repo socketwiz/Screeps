@@ -1,15 +1,28 @@
 
 let Room = require('room');
 
+/**
+ * Print room stats to the console
+ *
+ * @param {Object} room - room stats to print
+ */
 function displayRoom(room) {
     console.log(`Room "${room.name}" has ${room.energyAvailable} energy`);
 }
 
+/**
+ * Print creep stats to the console
+ *
+ * @param {Object} creep - creep stats to print
+ */
 function displayCreep(creep) {
     // eslint-disable-next-line
     console.log(`Room: ${creep.room.name}, Role: ${creep.memory.role}, Name: ${creep.name}, Energy: ${creep.carry.energy}/${creep.carryCapacity}`)
 }
 
+/**
+ * Global command to run from console gameStats()
+ */
 global.gameStats = function gameStats() {
     _.forEach(Game.rooms, displayRoom);
     _.forEach(Game.creeps, displayCreep);
