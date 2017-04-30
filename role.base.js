@@ -168,7 +168,7 @@ class BaseRole {
      * @param {Object} creep - the creep to pickup the resource
      * @param {Object} resource - the resource to pickup
      */
-    pickupDroppedResource(creep, resource) {
+    pickupResource(creep, resource) {
         if (creep.pickup(resource) === ERR_NOT_IN_RANGE) {
             creep.moveTo(resource, {visualizePathStyle: {stroke: this.color}});
         }
@@ -202,10 +202,10 @@ class BaseRole {
         // If there are dropped resources, make sure the creeps we send have room to pick it up
         if (droppedResources.length && (creep.carry < (creep.carrayCapacity - (MIN_DROPPED_RESOURCES + 1)))) {
             // Dropped resources have highest priority because they decay rapidly, pickup no matter what
-            let pickupDroppedCurried = _.curry(this.pickupDroppedResource);
-            let pickupDroppedWithCreep = pickupDroppedCurried(creep);
+            let pickupResourceCurried = _.curry(this.pickupResource);
+            let pickupResourceWithCreep = pickupResourceCurried(creep);
 
-            _.forEach(droppedResources, pickupDroppedWithCreep.bind(this));
+            _.forEach(droppedResources, pickupResourceWithCreep);
         } else {
             if (closest) {
                 currentSource = source;
