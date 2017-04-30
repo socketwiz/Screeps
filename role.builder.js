@@ -55,7 +55,8 @@ class RoleBuilder extends BaseRole {
             } else {
                 let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
                 let damagedStructures = creep.room.find(FIND_STRUCTURES, {
-                    'filter': structure => structure.hits < structure.hitsMax
+                    'filter': structure => structure.hits < structure.hitsMax &&
+                        structure.structureType !== STRUCTURE_RAMPART
                 });
 
                 if (constructionSites.length) {

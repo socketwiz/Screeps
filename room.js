@@ -95,14 +95,17 @@ class Room {
      */
     room(room) {
         let roomSet = _.filter(data.rooms, (value) => _.keys(value) == room);
-        let units = roomSet[0][room].units;
 
-        if (_.isEmpty(units) === false) {
-            _.forEach(units, this.setup.bind(this));
-            _.forEach(units, this.spawn.bind(this));
-            _.forEach(units, this.heal.bind(this));
-            _.forEach(units, this.attack.bind(this));
-            _.forEach(units, this.work.bind(this));
+        if (roomSet.length) {
+            let units = roomSet[0][room].units;
+
+            if (_.isEmpty(units) === false) {
+                _.forEach(units, this.setup.bind(this));
+                _.forEach(units, this.spawn.bind(this));
+                _.forEach(units, this.heal.bind(this));
+                _.forEach(units, this.attack.bind(this));
+                _.forEach(units, this.work.bind(this));
+            }
         }
     }
 

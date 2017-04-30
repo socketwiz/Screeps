@@ -163,6 +163,19 @@ class BaseRole {
     }
 
     /**
+     * When a creep dies they drop their resources, lets pick them up
+     *
+     * @param {Object} creep - the creep to send to the node
+     * @param {Object} resource - the resource to pickup
+     */
+    pickupDroppedResource(creep, resource) {
+        console.log(`DROPPED ${resource.amount} at ${resource.pos}`);
+        if (creep.pickup(resource) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(resource, {visualizePathStyle: {stroke: this.color}});
+        }
+    }
+
+    /**
      * Find the list of energy sources and move creep to one
      *
      * @param {Object} creep - the creep to send to the node
@@ -171,28 +184,43 @@ class BaseRole {
      * @param {Number} id - an id for a specific node
      */
     getResources(creep, closest, color, id = 0) {
-        var source = creep.pos.findClosestByRange(FIND_SOURCES);
-        var sources = creep.room.find(FIND_SOURCES);
+        const MIN_DROPPED_RESOURCES = 25;
+
+        let source = creep.pos.findClosestByRange(FIND_SOURCES);
+        let sources = creep.room.find(FIND_SOURCES);
+        let droppedResources = creep.room.find(FIND_DROPPED_RESOURCES, {
+            // no sense in sending creep over to pickup 1 resource
+            'filter': (resource) => resource.amount > MIN_DROPPED_RESOURCES
+        });
         let containers = creep.room.find(FIND_STRUCTURES, {
             'filter': (structure) => {
                 return (structure.structureType === STRUCTURE_CONTAINER ||
                        structure.structureType === STRUCTURE_STORAGE) && structure.store[RESOURCE_ENERGY];
             }
         });
-        var currentSource = sources[id];
+        let currentSource = sources[id];
 
-        if (closest) {
-            currentSource = source;
-        }
+        // If there are dropped resources, make sure the creeps we send have room to pick it up
+        if (droppedResources.length && (creep.carry < (creep.carrayCapacity - MIN_DROPPED_RESOURCES))) {
+            // Dropped resources have highest priority because they decay rapidly, pickup no matter what
+            let pickupDroppedCurried = _.curry(this.pickupDroppedResource);
+            let pickupDroppedWithCreep = pickupDroppedCurried(creep);
 
-        if (containers.length &&
-           this.energyAvailable !== this.energyCapacityAvailable) {
-            let withdrawFromContainerCurried = _.curry(this.withdrawFromContainer);
-            let withdrawFromContainerWithCreep = withdrawFromContainerCurried(creep);
+            _.forEach(droppedResources, pickupDroppedWithCreep.bind(this));
+        } else {
+            if (closest) {
+                currentSource = source;
+            }
 
-            _.forEach(containers, withdrawFromContainerWithCreep);
-        } else if (creep.harvest(currentSource) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(currentSource, {visualizePathStyle: {stroke: color}});
+            if (containers.length &&
+                this.energyAvailable !== this.energyCapacityAvailable) {
+                let withdrawFromContainerCurried = _.curry(this.withdrawFromContainer);
+                let withdrawFromContainerWithCreep = withdrawFromContainerCurried(creep);
+
+                _.forEach(containers, withdrawFromContainerWithCreep);
+            } else if (creep.harvest(currentSource) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(currentSource, {visualizePathStyle: {stroke: color}});
+            }
         }
     }
 
