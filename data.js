@@ -23,16 +23,19 @@ const DATA = {
                 'units': [
                     {
                         'count': 2,
+                        // eslint-disable-next-line
                         'features': [TOUGH, TOUGH, WORK, WORK, WORK, WORK, CARRY, CARRY, RANGED_ATTACK, HEAL, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
                         'role': 'harvester'
                     },
                     {
                         'count': 3,
+                        // eslint-disable-next-line
                         'features': [TOUGH, TOUGH, WORK, WORK, WORK, WORK, CARRY, CARRY, RANGED_ATTACK, HEAL, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
                         'role': 'upgrader'
                     },
                     {
                         'count': 3,
+                        // eslint-disable-next-line
                         'features': [TOUGH, TOUGH, WORK, WORK, WORK, WORK, CARRY, CARRY, RANGED_ATTACK, HEAL, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
                         'role': 'builder'
                     }

@@ -1,11 +1,12 @@
 
 let Room = require('room');
 
-function displayRoom(room)  {
+function displayRoom(room) {
     console.log(`Room "${room.name}" has ${room.energyAvailable} energy`);
 }
 
-function displayCreep(creep)  {
+function displayCreep(creep) {
+    // eslint-disable-next-line
     console.log(`Room: ${creep.room.name}, Role: ${creep.memory.role}, Name: ${creep.name}, Energy: ${creep.carry.energy}/${creep.carryCapacity}`)
 }
 
