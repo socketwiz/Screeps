@@ -1,6 +1,19 @@
 
 let Room = require('room');
 
+function displayRoom(room)  {
+    console.log(`Room "${room.name}" has ${room.energyAvailable} energy`);
+}
+
+function displayCreep(creep)  {
+    console.log(`Room: ${creep.room.name}, Role: ${creep.memory.role}, Name: ${creep.name}, Energy: ${creep.carry.energy}/${creep.carryCapacity}`)
+}
+
+global.gameStats = function gameStats() {
+    _.forEach(Game.rooms, displayRoom);
+    _.forEach(Game.creeps, displayCreep);
+};
+
 /**
  * Tower should attack and or repair
  *
@@ -39,8 +52,6 @@ module.exports.loop = function gameLoop() {
         if (Game.rooms.hasOwnProperty(gameRoom)) {
             let energyAvailable = Game.rooms[gameRoom].energyAvailable;
             let energyCapacityAvailable = Game.rooms[gameRoom].energyCapacityAvailable;
-
-            console.log(`Room "${gameRoom}" has ${energyAvailable} energy`);
 
             let towers = Game.rooms[gameRoom].find(FIND_STRUCTURES, {
                 'filter': (structure) => {
