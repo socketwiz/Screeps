@@ -17,7 +17,7 @@ function displayRoom(room) {
  */
 function displayCreep(creep) {
     // eslint-disable-next-line
-    console.log(`Room: ${creep.room.name}, Role: ${creep.memory.role}, Name: ${creep.name}, Energy: ${creep.carry.energy}/${creep.carryCapacity}`)
+    console.log(`Room: ${creep.room.name}, Role: ${creep.memory.role}, Energy: ${creep.carry.energy}/${creep.carryCapacity}, POS: ${creep.pos}, Name: ${creep.name}`)
 }
 
 /**

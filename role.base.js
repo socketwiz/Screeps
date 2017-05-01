@@ -200,7 +200,8 @@ class BaseRole {
         let currentSource = sources[id];
 
         // If there are dropped resources, make sure the creeps we send have room to pick it up
-        if (droppedResources.length && (creep.carry < (creep.carrayCapacity - (MIN_DROPPED_RESOURCES + 1)))) {
+        if (droppedResources.length &&
+            (creep.carry[RESOURCE_ENERGY] < (creep.carryCapacity - (MIN_DROPPED_RESOURCES + 1)))) {
             // Dropped resources have highest priority because they decay rapidly, pickup no matter what
             let pickupResourceCurried = _.curry(this.pickupResource);
             let pickupResourceWithCreep = pickupResourceCurried(creep);
