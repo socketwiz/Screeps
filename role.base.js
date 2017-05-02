@@ -22,54 +22,62 @@ class BaseRole {
      * If there are any hostiles, attack!
      *
      * @param {Object} creep - creep used in the attack
+     * @param {Object} hostile - hostile to heal
      */
-    attackWithCreep(creep) {
-        let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
+    attackHostiles(creep, hostile) {
+        let attack = creep.attack(hostile);
 
-        _.forEach(hostiles, hostile => {
-            let attack = creep.attack(hostile);
+        if (attack === OK) {
+            console.log(`${creep.name} attacked ${hostile.name}`);
+        }
 
-            if (attack === OK) {
-                console.log(`${creep.name} attacked ${hostile.name}`);
-            }
-
-            if (attack === ERR_NOT_IN_RANGE) {
-                creep.moveTo(hostile);
-            }
-        });
+        if (attack === ERR_NOT_IN_RANGE) {
+            creep.moveTo(hostile);
+        }
     }
 
     /**
      * Check for hostiles to attack
      */
     attack() {
-        _.forEach(this.creeps, this.attackWithCreep.bind(this));
+        let attackHostilesCurried = _.curry(this.attackHostiles);
+
+        _.forEach(this.creeps, function attackWithCreep(creep) {
+            let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
+            let attackHostilesWithCreepCurried = attackHostilesCurried(creep);
+
+            _.forEach(hostiles, attackHostilesWithCreepCurried.bind(this));
+        });
     }
 
     /**
      * If there are any wounded soldiers heal them
      *
      * @param {Object} creep - creep used to heal
+     * @param {Object} woundedSoldier - soldier to heal
      */
-    healWithCreep(creep) {
-        let woundedSoldiers = creep.room.find(FIND_MY_CREEPS, {
-            'filter': (soldier) => soldier.hits < soldier.hitsMax
-        });
+    healSoldiers(creep, woundedSoldier) {
+        let heal = creep.heal(woundedSoldier);
 
-        _.forEach(woundedSoldiers, function healSoldier(woundedSoldier) {
-            let heal = creep.heal(woundedSoldier);
-
-            if (heal === ERR_NOT_IN_RANGE) {
-                creep.moveTo(woundedSoldier);
-            }
-        });
+        if (heal === ERR_NOT_IN_RANGE) {
+            creep.moveTo(woundedSoldier);
+        }
     }
 
     /**
      * Check for wounded soldiers to heal
      */
     heal() {
-        _.forEach(this.creeps, this.healWithCreep.bind(this));
+        let healSoldiersCurried = _.curry(this.healSoldiers);
+
+        _.forEach(this.creeps, function healWithCreep(creep) {
+            let woundedSoldiers = creep.room.find(FIND_MY_CREEPS, {
+                'filter': (soldier) => soldier.hits < soldier.hitsMax
+            });
+            let healSoldiersWithCreepCurried = healSoldiersCurried(creep);
+
+            _.forEach(woundedSoldiers, healSoldiersWithCreepCurried.bind(this));
+        });
     }
 
     /**
@@ -196,7 +204,7 @@ class BaseRole {
         let featureSet = this.unit.features;
         let newCreep;
 
-        if (_.keys(Game.creeps).length === 0 && this.energyAvailable === 300) {
+        if (_.keys(Game.creeps).length === 0 && this.energyAvailable >= 300) {
             // Something really bad has happened, starting over from scratch
             let neededFeatures = this.expandFeatureSet(featureSet['needed']);
 

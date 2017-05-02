@@ -41,7 +41,7 @@ const DATA = {
                         'role': 'upgrader'
                     },
                     {
-                        'count': 2,
+                        'count': 1,
                         // eslint-disable-next-line
                         'features': {
                             // eslint-disable-next-line max-len
@@ -50,7 +50,7 @@ const DATA = {
                         'role': 'builder'
                     },
                     {
-                        'count': 1,
+                        'count': 2,
                         // eslint-disable-next-line max-len
                         'features': {
                             // eslint-disable-next-line
