@@ -27,12 +27,48 @@ class RoleBuilder extends BaseRole {
      */
     repair(creep, structure) {
         if (structure.hits < structure.hitsMax) {
+            console.log(`${structure.structureType.capitalize()} needs repair at ${structure.pos.x},${structure.pos.y}`);
+
             let notNearStructure = creep.repair(structure) === ERR_NOT_IN_RANGE;
 
             if (notNearStructure) {
                 creep.moveTo(structure, {visualizePathStyle: {stroke: this.color}});
             }
         }
+    }
+
+    /**
+     * Figure out which roads need to be repaired
+     *
+     * @param {Object} structure - road to check for repairs
+     * @returns {Boolean} - true if needs repair
+     */
+    roadsNeedsRepair(structure) {
+        const NEEDS_REPAIR = structure.hits < structure.hitsMax;
+        const IS_ROAD = structure.structureType === STRUCTURE_ROAD;
+
+        if (IS_ROAD && NEEDS_REPAIR) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Figure out which ramparts need to be repaired
+     *
+     * @param {Object} structure - rampart to check for repairs
+     * @returns {Boolean} - true if needs repair
+     */
+    rampartsNeedsRepair(structure) {
+        const NEEDS_REPAIR = structure.hits < structure.hitsMax;
+        const IS_RAMPART = structure.structureType === STRUCTURE_RAMPART;
+
+        if (IS_RAMPART && NEEDS_REPAIR) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -56,18 +92,8 @@ class RoleBuilder extends BaseRole {
                 super.depositToBanks(creep);
             } else {
                 let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
-                let damagedStructures = creep.room.find(FIND_STRUCTURES, {
-                    'filter': structure => structure.hits < structure.hitsMax &&
-                        structure.structureType !== STRUCTURE_RAMPART,
-                    'sortBy': structure => {
-                        const RANK = {
-                            STRUCTURE_ROAD: 0,
-                            STRUCTURE_RAMPART: 1
-                        };
-
-                        return structure[RANK];
-                    }
-                });
+                let damagedRoads = creep.room.find(FIND_STRUCTURES, {'filter': this.roadsNeedsRepair});
+                let damagedRamparts = creep.room.find(FIND_STRUCTURES, {'filter': this.rampartsNeedsRepair});
 
                 if (constructionSites.length) {
                     // Do main job, build stuff
@@ -76,11 +102,22 @@ class RoleBuilder extends BaseRole {
                     if (creep.build(target) === ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
                     }
-                } else if (damagedStructures.length) {
-                    // Repair structures
-                    let repairCurried = _.curry(this.repair);
-                    let repairWithCreep = repairCurried(creep);
-                    _.forEach(damagedStructures, repairWithCreep);
+                } else if (damagedRoads.length || damagedRamparts.length) {
+                    // Repair roads first
+                    let repairRoadCurried = _.curry(this.repair);
+                    let repairRoadWithCreep = repairRoadCurried(creep);
+
+                    if (creep.memory.role === 'roadCrew') {
+                        _.forEach(damagedRoads, repairRoadWithCreep);
+                    }
+
+                    // Repair ramparts
+                    let repairRampartCurried = _.curry(this.repair);
+                    let repairRampartWithCreep = repairRampartCurried(creep);
+
+                    if (creep.memory.role === 'builder') {
+                        _.forEach(damagedRamparts, repairRampartWithCreep);
+                    }
                 } else {
                     // Do upgrade while waiting for something else to build or repair
                     if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {

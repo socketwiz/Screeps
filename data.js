@@ -24,20 +24,35 @@ const DATA = {
                     {
                         'count': 2,
                         // eslint-disable-next-line
-                        'features': [TOUGH, TOUGH, WORK, WORK, WORK, WORK, CARRY, CARRY, RANGED_ATTACK, HEAL, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+                        'features': {
+                            'needed': [{WORK: 1}, {CARRY: 1}, {MOVE: 3}],
+                            'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
+                        },
                         'role': 'harvester'
                     },
                     {
                         'count': 3,
                         // eslint-disable-next-line
-                        'features': [TOUGH, TOUGH, WORK, WORK, WORK, WORK, CARRY, CARRY, RANGED_ATTACK, HEAL, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+                        'features': {
+                            'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
+                        },
                         'role': 'upgrader'
                     },
                     {
-                        'count': 3,
+                        'count': 2,
                         // eslint-disable-next-line
-                        'features': [TOUGH, TOUGH, WORK, WORK, WORK, WORK, CARRY, CARRY, RANGED_ATTACK, HEAL, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+                        'features': {
+                            'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
+                        },
                         'role': 'builder'
+                    },
+                    {
+                        'count': 1,
+                        // eslint-disable-next-line
+                        'features': {
+                            'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
+                        },
+                        'role': 'roadCrew'
                     }
                 ]
             }

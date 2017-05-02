@@ -12,9 +12,10 @@ String.prototype.capitalize = function capitalize() {
 
 class BaseRole {
     constructor(props) {
-        this.unit = props.unit;
+        this.debug = true;
         this.energyAvailable = props.energyAvailable;
         this.energyCapacityAvailable = props.energyCapacityAvailable;
+        this.unit = props.unit;
     }
 
     /**
@@ -23,11 +24,13 @@ class BaseRole {
      * @param {Object} creep - creep used in the attack
      */
     attackWithCreep(creep) {
-        let closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
 
-        if (closestHostile) {
-            creep.attack(closestHostile);
-        }
+        _.forEach(hostiles, hostile => {
+            if (creep.attack(hostile) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(hostile);
+            }
+        });
     }
 
     /**
@@ -43,13 +46,11 @@ class BaseRole {
      * @param {Object} creep - creep used to heal
      */
     healWithCreep(creep) {
-        let woundedSoldier = creep.pos.findClosestByRange(FIND_CREEPS, {
+        let woundedSoldiers = creep.room.find(FIND_CREEPS, {
             'filter': (soldier) => soldier.hits < soldier.hitsMax
         });
 
-        if (woundedSoldier) {
-            creep.repair(woundedSoldier);
-        }
+        _.forEach(woundedSoldiers, woundedSoldier => creep.heal(woundedSoldier));
     }
 
     /**
@@ -152,14 +153,40 @@ class BaseRole {
         }
     }
 
+    processFeatureSet(featureSet) {
+        let features =  _.map(featureSet, feature => {
+            const COUNT = _.values(feature)[0];
+
+            return _.times(COUNT, function getKeys() {
+                return eval(_.keys(feature)[0]);
+            });
+        });
+
+        // flatten the array
+        return [].concat.apply([], features);
+    }
+
     /**
      * Spawn a creep
      */
     spawn() {
         let featureSet = this.unit.features;
-        let newCreep = Game.spawns['SpawnDominator'].createCreep(featureSet, undefined, {role: this.unit.role});
+        let newCreep;
 
-        console.log(`Spawning new ${this.unit.role}: ${this.formatError(newCreep)}`);
+        if (_.keys(Game.creeps).length === 0 && this.energyAvailable === 300) {
+            // Something really bad has happened, starting over from scratch
+            let neededFeatures = this.processFeatureSet(featureSet['needed']);
+
+            newCreep = Game.spawns['SpawnDominator'].createCreep(neededFeatures, undefined, {role: this.unit.role});
+        } else {
+            let wantedFeatures = this.processFeatureSet(featureSet['wanted']);
+
+            newCreep = Game.spawns['SpawnDominator'].createCreep(wantedFeatures, undefined, {role: this.unit.role});
+        }
+
+        if (this.debug) {
+            console.log(`Spawning new ${this.unit.role}: ${this.formatError(newCreep)}`);
+        }
     }
 
     /**
@@ -169,6 +196,10 @@ class BaseRole {
      * @param {Object} resource - the resource to pickup
      */
     pickupResource(creep, resource) {
+        if (this.debug) {
+            console.log(`Picking up ${resource.amount} dropped resources at: ${resource.pos.x},${resource.pos.y}`)
+        }
+
         if (creep.pickup(resource) === ERR_NOT_IN_RANGE) {
             creep.moveTo(resource, {visualizePathStyle: {stroke: this.color}});
         }

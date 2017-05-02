@@ -16,8 +16,10 @@ function displayRoom(room) {
  * @param {Object} creep - creep stats to print
  */
 function displayCreep(creep) {
+    const POS = creep.pos;
+
     // eslint-disable-next-line
-    console.log(`Room: ${creep.room.name}, Role: ${creep.memory.role}, Energy: ${creep.carry.energy}/${creep.carryCapacity}, POS: ${creep.pos}, Name: ${creep.name}`)
+    console.log(`Room: ${creep.room.name}, Role: ${creep.memory.role}, Energy: ${creep.carry.energy}/${creep.carryCapacity}, POS: ${POS.x},${POS.y}, Name: ${creep.name}`)
 }
 
 /**

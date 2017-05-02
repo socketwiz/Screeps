@@ -11,7 +11,8 @@ class Room {
         this.units = {
             'harvester': undefined,
             'upgrader': undefined,
-            'builder': undefined
+            'builder': undefined,
+            'roadCrew': undefined
         };
     }
 
@@ -36,6 +37,9 @@ class Room {
                 break;
             case 'builder':
                 this.units.builder = new RoleBuilder(props);
+                break;
+            case 'roadCrew':
+                this.units.roadCrew = new RoleBuilder(props);
                 break;
         }
     }
@@ -107,6 +111,16 @@ class Room {
                 _.forEach(units, this.work.bind(this));
             }
         }
+
+        const ROOM = 'W93N16';
+        let lostCreeps = _.filter(Game.creeps, (creep) => creep.room.name !== ROOM);
+
+        if (lostCreeps.length) {
+            // get back to our spawnPoint
+            let ourRoom = new RoomPosition(17, 46, ROOM);
+            _.forEach(lostCreeps, creep => creep.moveTo(ourRoom));
+        }
+
     }
 
     /**
