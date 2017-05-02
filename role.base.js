@@ -153,7 +153,17 @@ class BaseRole {
         }
     }
 
-    processFeatureSet(featureSet) {
+    /**
+     * Take as input the array of objects:
+     * [{TOUGH: 2, WORK: 5, ...}]
+     * and return an array with the count of types:
+     * [tough, tough, work, work, work, work, work, ...]
+     * evaluated from the constant to the real values.
+     *
+     * @param {Array} featureSet - set of features to process
+     * @returns {Array} - expaned set of features
+     */
+    expandFeatureSet(featureSet) {
         let features =  _.map(featureSet, feature => {
             const COUNT = _.values(feature)[0];
 
@@ -162,7 +172,7 @@ class BaseRole {
             });
         });
 
-        // flatten the array
+        // flatten the array or arrays
         return [].concat.apply([], features);
     }
 
@@ -175,11 +185,11 @@ class BaseRole {
 
         if (_.keys(Game.creeps).length === 0 && this.energyAvailable === 300) {
             // Something really bad has happened, starting over from scratch
-            let neededFeatures = this.processFeatureSet(featureSet['needed']);
+            let neededFeatures = this.expandFeatureSet(featureSet['needed']);
 
             newCreep = Game.spawns['SpawnDominator'].createCreep(neededFeatures, undefined, {role: this.unit.role});
         } else {
-            let wantedFeatures = this.processFeatureSet(featureSet['wanted']);
+            let wantedFeatures = this.expandFeatureSet(featureSet['wanted']);
 
             newCreep = Game.spawns['SpawnDominator'].createCreep(wantedFeatures, undefined, {role: this.unit.role});
         }
