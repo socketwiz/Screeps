@@ -24,6 +24,13 @@ class RoleHarvester extends BaseRole {
      * @param {Object} creep - the creep to put to work
      */
     run(creep) {
+        let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
+
+        if (hostiles.length) {
+            // All forces to attack
+            return;
+        }
+
         if (creep.carry.energy < creep.carryCapacity) {
             super.getResources(creep, false, this.color);
         } else {

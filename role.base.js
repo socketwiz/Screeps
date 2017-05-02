@@ -27,7 +27,13 @@ class BaseRole {
         let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
 
         _.forEach(hostiles, hostile => {
-            if (creep.attack(hostile) === ERR_NOT_IN_RANGE) {
+            let attack = creep.attack(hostile);
+
+            if (attack === OK) {
+                console.log(`${creep.name} attacked ${hostile.name}`);
+            }
+
+            if (attack === ERR_NOT_IN_RANGE) {
                 creep.moveTo(hostile);
             }
         });
@@ -46,11 +52,17 @@ class BaseRole {
      * @param {Object} creep - creep used to heal
      */
     healWithCreep(creep) {
-        let woundedSoldiers = creep.room.find(FIND_CREEPS, {
+        let woundedSoldiers = creep.room.find(FIND_MY_CREEPS, {
             'filter': (soldier) => soldier.hits < soldier.hitsMax
         });
 
-        _.forEach(woundedSoldiers, woundedSoldier => creep.heal(woundedSoldier));
+        _.forEach(woundedSoldiers, function healSoldier(woundedSoldier) {
+            let heal = creep.heal(woundedSoldier);
+
+            if (heal === ERR_NOT_IN_RANGE) {
+                creep.moveTo(woundedSoldier);
+            }
+        });
     }
 
     /**

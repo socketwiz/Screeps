@@ -25,6 +25,13 @@ class RoleUpgrader extends BaseRole {
      * @param {Object} creep - the creep to put to work
      */
     run(creep) {
+        let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
+
+        if (hostiles.length) {
+            // All forces to attack
+            return;
+        }
+
         if (creep.memory.upgrading && creep.carry.energy == 0) {
             creep.memory.upgrading = false;
             creep.say('🔄 harvest');

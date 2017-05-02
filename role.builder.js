@@ -28,7 +28,7 @@ class RoleBuilder extends BaseRole {
     repair(creep, structure) {
         if (structure.hits < structure.hitsMax) {
             // eslint-disable-next-line max-len
-            console.log(`${structure.structureType.capitalize()} needs repair at ${structure.pos.x},${structure.pos.y}`);
+            // console.log(`${structure.structureType.capitalize()} needs repair at ${structure.pos.x},${structure.pos.y}`);
 
             let notNearStructure = creep.repair(structure) === ERR_NOT_IN_RANGE;
 
@@ -78,6 +78,13 @@ class RoleBuilder extends BaseRole {
      * @param {Object} creep - the creep to put to work
      */
     run(creep) {
+        let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
+
+        if (hostiles.length) {
+            // All forces to attack
+            return;
+        }
+
         if (creep.memory.building && creep.carry.energy === 0) {
             creep.memory.building = false;
             creep.say('🔄 harvest');
