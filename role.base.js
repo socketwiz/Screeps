@@ -164,10 +164,11 @@ class BaseRole {
      * @returns {Array} - expaned set of features
      */
     expandFeatureSet(featureSet) {
-        let features =  _.map(featureSet, feature => {
+        let features = _.map(featureSet, feature => {
             const COUNT = _.values(feature)[0];
 
             return _.times(COUNT, function getKeys() {
+                // eslint-disable-next-line no-eval
                 return eval(_.keys(feature)[0]);
             });
         });
@@ -207,7 +208,7 @@ class BaseRole {
      */
     pickupResource(creep, resource) {
         if (this.debug) {
-            console.log(`Picking up ${resource.amount} dropped resources at: ${resource.pos.x},${resource.pos.y}`)
+            console.log(`Picking up ${resource.amount} dropped resources at: ${resource.pos.x},${resource.pos.y}`);
         }
 
         if (creep.pickup(resource) === ERR_NOT_IN_RANGE) {

@@ -62,6 +62,7 @@
         "STRUCTURE_CONTAINER": true,
         "STRUCTURE_RAMPART": true,
         "STRUCTURE_STORAGE": true,
+        "STRUCTURE_ROAD": true,
         "FIND_SOURCES": true,
         "ERR_BUSY": true,
         "FIND_HOSTILE_CREEPS": true,
@@ -71,7 +72,8 @@
         "MOVE": true,
         "CARRY": true,
         "WORK": true,
-        "Memory": true
+        "Memory": true,
+        "RoomPosition": true
     }
 }
 

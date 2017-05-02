@@ -26,6 +26,7 @@ const DATA = {
                         // eslint-disable-next-line
                         'features': {
                             'needed': [{WORK: 1}, {CARRY: 1}, {MOVE: 3}],
+                            // eslint-disable-next-line max-len
                             'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
                         },
                         'role': 'harvester'
@@ -34,6 +35,7 @@ const DATA = {
                         'count': 3,
                         // eslint-disable-next-line
                         'features': {
+                            // eslint-disable-next-line max-len
                             'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
                         },
                         'role': 'upgrader'
@@ -42,14 +44,16 @@ const DATA = {
                         'count': 2,
                         // eslint-disable-next-line
                         'features': {
+                            // eslint-disable-next-line max-len
                             'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
                         },
                         'role': 'builder'
                     },
                     {
                         'count': 1,
-                        // eslint-disable-next-line
+                        // eslint-disable-next-line max-len
                         'features': {
+                            // eslint-disable-next-line
                             'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
                         },
                         'role': 'roadCrew'

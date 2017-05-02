@@ -27,6 +27,7 @@ class RoleBuilder extends BaseRole {
      */
     repair(creep, structure) {
         if (structure.hits < structure.hitsMax) {
+            // eslint-disable-next-line max-len
             console.log(`${structure.structureType.capitalize()} needs repair at ${structure.pos.x},${structure.pos.y}`);
 
             let notNearStructure = creep.repair(structure) === ERR_NOT_IN_RANGE;
