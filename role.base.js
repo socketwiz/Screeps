@@ -25,11 +25,11 @@ class BaseRole {
      * @param {Object} hostile - hostile to heal
      */
     attackHostiles(creep, hostile) {
-        let ranged = _.find(creep.body, body => body.type === RANGED_ATTACK);
+        let dps = _.find(creep.body, body => body.type === RANGED_ATTACK);
         let tank = _.find(creep.body, body => body.type === ATTACK);
-        let attacked = OK;
+        let attacked = ERR_INVALID_TARGET;
 
-        if (ranged) {
+        if (dps) {
             attacked = creep.rangedAttack(hostile);
         }
         if (tank) {
@@ -67,7 +67,7 @@ class BaseRole {
      */
     healSoldiers(creep, woundedSoldier) {
         let heals = _.find(creep.body, body => body.type === HEAL);
-        let healed = OK;
+        let healed = ERR_INVALID_TARGET;
 
         if (heals) {
             healed = creep.heal(woundedSoldier);
