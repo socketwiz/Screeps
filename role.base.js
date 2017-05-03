@@ -116,8 +116,12 @@ class BaseRole {
      */
     makeDeposit(creep, target) {
         if (target) {
-            if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+            let transfer = creep.transfer(target, RESOURCE_ENERGY);
+
+            if (transfer === ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
+            } else {
+                this.formatError(transfer);
             }
         }
     }
@@ -137,7 +141,7 @@ class BaseRole {
             }
         });
 
-        let depositCurried = _.curry(this.makeDeposit);
+        let depositCurried = _.curry(this.makeDeposit.bind(this));
         let depositWithCreep = depositCurried(creep);
 
         if (targets.length) {
@@ -163,7 +167,7 @@ class BaseRole {
             }
         });
 
-        let depositCurried = _.curry(this.makeDeposit);
+        let depositCurried = _.curry(this.makeDeposit.bind(this));
         let depositWithCreep = depositCurried(creep);
 
         if (targets.length) {
@@ -190,7 +194,7 @@ class BaseRole {
             }
         });
 
-        let depositCurried = _.curry(this.makeDeposit);
+        let depositCurried = _.curry(this.makeDeposit.bind(this));
         let depositWithCreep = depositCurried(creep);
 
         if (containers.length) {

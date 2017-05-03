@@ -43,7 +43,7 @@ function towerRepairAttack(tower) {
         });
 
         if (closestDamagedStructure) {
-            tower.repair(closestDamagedStructure);
+            // tower.repair(closestDamagedStructure);
         }
 
         if (closestHostile) {

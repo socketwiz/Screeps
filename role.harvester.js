@@ -31,9 +31,16 @@ class RoleHarvester extends BaseRole {
             return;
         }
 
-        if (creep.carry.energy < creep.carryCapacity) {
-            super.getResources(creep, false, this.color);
-        } else {
+        if (creep.memory.depositing && creep.carry.energy === 0) {
+            creep.memory.depositing = false;
+            creep.say('🔄 harvest');
+        }
+        if (!creep.memory.depositing && creep.carry.energy === creep.carryCapacity) {
+            creep.memory.depositing = true;
+            creep.say('$ deposit');
+        }
+
+        if (creep.memory.depositing) {
             if (super.depositToBanks(creep) === false) {
                 if (super.depositToContainers(creep) === false) {
                     // Do upgrade while waiting for something else to harvest
@@ -42,6 +49,8 @@ class RoleHarvester extends BaseRole {
                     }
                 }
             }
+        } else {
+            super.getResources(creep, false, this.color);
         }
     }
 

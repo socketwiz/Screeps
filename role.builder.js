@@ -124,7 +124,9 @@ class RoleBuilder extends BaseRole {
                         _.forEach(damagedRamparts, repairWithCreep);
                     }
                 } else {
-                    super.depositToTowers(creep);
+                    if (super.depositToTowers(creep) === false) {
+                        super.depositToContainers(creep);
+                    }
                 }
             }
         } else {
