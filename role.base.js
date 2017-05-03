@@ -25,13 +25,22 @@ class BaseRole {
      * @param {Object} hostile - hostile to heal
      */
     attackHostiles(creep, hostile) {
-        let attack = creep.attack(hostile);
+        let ranged = _.find(creep.body, body => body.type === RANGED_ATTACK);
+        let tank = _.find(creep.body, body => body.type === ATTACK);
+        let attacked = OK;
 
-        if (attack === OK) {
+        if (ranged) {
+            attacked = creep.rangedAttack(hostile);
+        }
+        if (tank) {
+            attacked = creep.attack(hostile);
+        }
+
+        if (attacked === OK) {
             console.log(`${creep.name} attacked ${hostile.name}`);
         }
 
-        if (attack === ERR_NOT_IN_RANGE) {
+        if (attacked === ERR_NOT_IN_RANGE) {
             creep.moveTo(hostile);
         }
     }
@@ -57,9 +66,17 @@ class BaseRole {
      * @param {Object} woundedSoldier - soldier to heal
      */
     healSoldiers(creep, woundedSoldier) {
-        let heal = creep.heal(woundedSoldier);
+        let heals = _.find(creep.body, body => body.type === HEAL);
+        let healed = OK;
 
-        if (heal === ERR_NOT_IN_RANGE) {
+        if (heals) {
+            healed = creep.heal(woundedSoldier);
+        }
+        if (healed === OK) {
+            console.log(`${creep.name} healed ${woundedSoldier.name}`);
+        }
+
+        if (healed === ERR_NOT_IN_RANGE) {
             creep.moveTo(woundedSoldier);
         }
     }

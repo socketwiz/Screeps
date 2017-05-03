@@ -23,38 +23,30 @@ const DATA = {
                 'units': [
                     {
                         'count': 2,
-                        // eslint-disable-next-line
                         'features': {
                             'needed': [{WORK: 1}, {CARRY: 1}, {MOVE: 3}],
-                            // eslint-disable-next-line max-len
-                            'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
+                            'wanted': [{TOUGH: 10}, {WORK: 4}, {CARRY: 2}, {MOVE: 6}, {ATTACK: 4}, {MOVE: 1}]
                         },
                         'role': 'harvester'
                     },
                     {
                         'count': 3,
-                        // eslint-disable-next-line
                         'features': {
-                            // eslint-disable-next-line max-len
-                            'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
+                            'wanted': [{TOUGH: 10}, {WORK: 4}, {CARRY: 2}, {MOVE: 6}, {RANGED_ATTACK: 2}, {MOVE: 1}]
                         },
                         'role': 'upgrader'
                     },
                     {
                         'count': 1,
-                        // eslint-disable-next-line
                         'features': {
-                            // eslint-disable-next-line max-len
-                            'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
+                            'wanted': [{TOUGH: 10}, {WORK: 4}, {CARRY: 2}, {MOVE: 6}, {ATTACK: 4}, {MOVE: 1}]
                         },
                         'role': 'builder'
                     },
                     {
                         'count': 2,
-                        // eslint-disable-next-line max-len
                         'features': {
-                            // eslint-disable-next-line
-                            'wanted': [{TOUGH: 2}, {WORK: 4}, {CARRY: 2}, {MOVE: 5}, {RANGED_ATTACK: 1}, {HEAL: 1}, {ATTACK: 1}, {MOVE: 1}]
+                            'wanted': [{TOUGH: 20}, {WORK: 4}, {CARRY: 2}, {MOVE: 6}, {HEAL: 1}, {MOVE: 1}]
                         },
                         'role': 'roadCrew'
                     }
