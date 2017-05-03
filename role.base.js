@@ -133,6 +133,32 @@ class BaseRole {
     }
 
     /**
+     * Find a list of towers to deposit into
+     *
+     * @param {Object} creep - creep that has energy to deposit
+     * @returns {Boolean} - true if there are structures that need a deposit
+     */
+    depositToTowers(creep) {
+        let targets = creep.room.find(FIND_STRUCTURES, {
+            'filter': (structure) => {
+                return (structure.structureType == STRUCTURE_TOWER) &&
+                    structure.energy < structure.energyCapacity;
+            }
+        });
+
+        let depositCurried = _.curry(this.makeDeposit);
+        let depositWithCreep = depositCurried(creep);
+
+        if (targets.length) {
+            _.forEach(targets, depositWithCreep);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Find a list of containers to deposit into
      *
      * @param {Object} creep - creep that has energy to deposit

@@ -28,7 +28,7 @@ class RoleBuilder extends BaseRole {
     repair(creep, structure) {
         if (structure.hits < structure.hitsMax) {
             // eslint-disable-next-line max-len
-            console.log(`${structure.structureType.capitalize()} needs repair at ${structure.pos.x},${structure.pos.y}`);
+            // console.log(`${structure.structureType.capitalize()} needs repair at ${structure.pos.x},${structure.pos.y}`);
 
             let notNearStructure = creep.repair(structure) === ERR_NOT_IN_RANGE;
 
@@ -111,26 +111,20 @@ class RoleBuilder extends BaseRole {
                         creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
                     }
                 } else if (damagedRoads.length || damagedRamparts.length) {
-                    // Repair roads first
-                    let repairRoadCurried = _.curry(this.repair);
-                    let repairRoadWithCreep = repairRoadCurried(creep);
+                    let repairCurried = _.curry(this.repair);
+                    let repairWithCreep = repairCurried(creep);
 
+                    // Repair roads
                     if (creep.memory.role === 'roadCrew') {
-                        _.forEach(damagedRoads, repairRoadWithCreep);
+                        _.forEach(damagedRoads, repairWithCreep);
                     }
 
                     // Repair ramparts
-                    let repairRampartCurried = _.curry(this.repair);
-                    let repairRampartWithCreep = repairRampartCurried(creep);
-
                     if (creep.memory.role === 'builder') {
-                        _.forEach(damagedRamparts, repairRampartWithCreep);
+                        _.forEach(damagedRamparts, repairWithCreep);
                     }
                 } else {
-                    // Do upgrade while waiting for something else to build or repair
-                    if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: this.color}});
-                    }
+                    super.depositToTowers(creep);
                 }
             }
         } else {
