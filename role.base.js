@@ -229,8 +229,7 @@ class BaseRole {
     expandFeatureSet(featureSet) {
         let features = _.map(featureSet, datum => _.times(datum[1], () => datum[0]));
 
-        // flatten the array or arrays
-        return [].concat.apply([], features);
+        return _.flatten(features);
     }
 
     /**

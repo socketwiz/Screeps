@@ -20,6 +20,13 @@ const DATA = {
                 // CLAIM         = 600
                 // TOUGH         = 10
 
+                /**
+                 * Each body part (except MOVE) generates fatigue points when the
+                 * creep moves: 1 point per body part on roads, 2 on plain land,
+                 * 10 on swamp. Each MOVE body part decreases fatigue points by
+                 * 2 per tick.
+                 */
+
                 'units': [
                     {
                         'count': 2,
