@@ -15,7 +15,7 @@ class RoleUpgrader extends BaseRole {
         this.unit = unit;
 
         if (creeps.length !== unit.count) {
-            console.log(`${unit.role.capitalize()}s: ${creeps.length}/${unit.count}`);
+            console.log(`${_.capitalize(unit.role)}s: ${creeps.length}/${unit.count}`);
         }
     }
 

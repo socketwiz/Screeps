@@ -15,7 +15,7 @@ class RoleBuilder extends BaseRole {
         this.unit = unit;
 
         if (creeps.length !== unit.count) {
-            console.log(`${unit.role.capitalize()}s: ${creeps.length}/${unit.count}`);
+            console.log(`${_.capitalize(unit.role)}s: ${creeps.length}/${unit.count}`);
         }
     }
 
@@ -28,7 +28,7 @@ class RoleBuilder extends BaseRole {
     repair(creep, structure) {
         if (structure.hits < structure.hitsMax) {
             // eslint-disable-next-line max-len
-            // console.log(`${structure.structureType.capitalize()} needs repair at ${structure.pos.x},${structure.pos.y}`);
+            // console.log(`${_.capitalize(structure.structureType)} needs repair at ${structure.pos.x},${structure.pos.y}`);
 
             let notNearStructure = creep.repair(structure) === ERR_NOT_IN_RANGE;
 

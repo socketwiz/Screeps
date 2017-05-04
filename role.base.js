@@ -1,15 +1,4 @@
 
-/**
- * Capitalize the first character in a word
- *
- * @return {String} - the capitalized word
- */
-String.prototype.capitalize = function capitalize() {
-    return this.replace(/(?:^|\s)\S/g, function capitalizeWord(word) {
-        return word.toUpperCase();
-    });
-};
-
 class BaseRole {
     constructor(props) {
         this.debug = true;
