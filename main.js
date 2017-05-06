@@ -21,7 +21,7 @@ function displayRoom(room) {
 
     console.log(`Room "${room.name}" has ${room.energyAvailable} energy`);
     console.log(`Constructiion sites: ${constructionSites.length}`)
-    console.log(`Roads need repair: ${damagedRoads.length}`)
+    console.log(`Roads to repair: ${damagedRoads.length}`)
     console.log(`Ramparts to repair: ${damagedRamparts.length}`)
     console.log(`Walls to repair: ${damagedWalls.length}`)
 }
@@ -59,7 +59,7 @@ function towerRepairAttack(tower) {
         });
 
         if (closestDamagedStructure) {
-            tower.repair(closestDamagedStructure);
+            //tower.repair(closestDamagedStructure);
         }
 
         if (closestHostile) {
