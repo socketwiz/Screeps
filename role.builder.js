@@ -1,6 +1,6 @@
 
 let BaseRole = require('role.base');
-let comment = require('common');
+let common = require('common');
 
 class RoleBuilder extends BaseRole {
     constructor(props) {
