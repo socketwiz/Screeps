@@ -1,5 +1,6 @@
 
 let BaseRole = require('role.base');
+let comment = require('common');
 
 class RoleBuilder extends BaseRole {
     constructor(props) {
@@ -39,40 +40,6 @@ class RoleBuilder extends BaseRole {
     }
 
     /**
-     * Figure out which roads need to be repaired
-     *
-     * @param {Object} structure - road to check for repairs
-     * @returns {Boolean} - true if needs repair
-     */
-    roadsNeedsRepair(structure) {
-        const NEEDS_REPAIR = structure.hits < structure.hitsMax;
-        const IS_ROAD = structure.structureType === STRUCTURE_ROAD;
-
-        if (IS_ROAD && NEEDS_REPAIR) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Figure out which ramparts need to be repaired
-     *
-     * @param {Object} structure - rampart to check for repairs
-     * @returns {Boolean} - true if needs repair
-     */
-    rampartsNeedsRepair(structure) {
-        const NEEDS_REPAIR = structure.hits < structure.hitsMax;
-        const IS_RAMPART = structure.structureType === STRUCTURE_RAMPART;
-
-        if (IS_RAMPART && NEEDS_REPAIR) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Work for a single creep to perform
      *
      * @param {Object} creep - the creep to put to work
@@ -99,9 +66,16 @@ class RoleBuilder extends BaseRole {
                 // All hands on deck when energy is below max
                 super.depositToBanks(creep);
             } else {
+                let needsRepairCurried = _.curry(common.needsRepair);
+
+                let areRoadsDamaged = needsRepairCurried(STRUCTURE_ROAD);
+                let areRampartsDamaged = needsRepairCurried(STRUCTURE_RAMPART);
+                let areWallsDamaged = needsRepairCurried(STRUCTURE_WALL);
+
                 let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
-                let damagedRoads = creep.room.find(FIND_STRUCTURES, {'filter': this.roadsNeedsRepair});
-                let damagedRamparts = creep.room.find(FIND_STRUCTURES, {'filter': this.rampartsNeedsRepair});
+                let damagedRoads = creep.room.find(FIND_STRUCTURES, {'filter': areRoadsDamaged});
+                let damagedRamparts = creep.room.find(FIND_STRUCTURES, {'filter': areRampartsDamaged});
+                let damagedWalls = creep.room.find(FIND_STRUCTURES, {'filter': areWallsDamaged});
 
                 if (constructionSites.length) {
                     // Do main job, build stuff
@@ -110,7 +84,7 @@ class RoleBuilder extends BaseRole {
                     if (creep.build(target) === ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
                     }
-                } else if (damagedRoads.length || damagedRamparts.length) {
+                } else if (damagedRoads.length || damagedRamparts.length || damagedWalls.length) {
                     let repairCurried = _.curry(this.repair);
                     let repairWithCreep = repairCurried(creep);
 
@@ -122,6 +96,7 @@ class RoleBuilder extends BaseRole {
                     // Repair ramparts
                     if (creep.memory.role === 'builder') {
                         _.forEach(damagedRamparts, repairWithCreep);
+                        _.forEach(damagedWalls, repairWithCreep);
                     }
                 } else {
                     if (super.depositToTowers(creep) === false) {

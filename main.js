@@ -1,4 +1,5 @@
 
+let common = require('common');
 let Room = require('room');
 
 /**
@@ -7,7 +8,22 @@ let Room = require('room');
  * @param {Object} room - room stats to print
  */
 function displayRoom(room) {
+    let needsRepairCurried = _.curry(common.needsRepair);
+
+    let areRoadsDamaged = needsRepairCurried(STRUCTURE_ROAD);
+    let areRampartsDamaged = needsRepairCurried(STRUCTURE_RAMPART);
+    let areWallsDamaged = needsRepairCurried(STRUCTURE_WALL);
+
+    let constructionSites = room.find(FIND_CONSTRUCTION_SITES);
+    let damagedRoads = room.find(FIND_STRUCTURES, {'filter': areRoadsDamaged});
+    let damagedRamparts = room.find(FIND_STRUCTURES, {'filter': areRampartsDamaged});
+    let damagedWalls = room.find(FIND_STRUCTURES, {'filter': areWallsDamaged});
+
     console.log(`Room "${room.name}" has ${room.energyAvailable} energy`);
+    console.log(`Constructiion sites: ${constructionSites.length}`)
+    console.log(`Roads need repair: ${damagedRoads.length}`)
+    console.log(`Ramparts to repair: ${damagedRamparts.length}`)
+    console.log(`Walls to repair: ${damagedWalls.length}`)
 }
 
 /**
@@ -43,7 +59,7 @@ function towerRepairAttack(tower) {
         });
 
         if (closestDamagedStructure) {
-            // tower.repair(closestDamagedStructure);
+            tower.repair(closestDamagedStructure);
         }
 
         if (closestHostile) {
