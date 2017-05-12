@@ -95,8 +95,11 @@ class RoleBuilder extends BaseRole {
 
                     // Repair ramparts
                     if (creep.memory.role === 'builder') {
-                        _.forEach(damagedRamparts, repairWithCreep);
-                        _.forEach(damagedWalls, repairWithCreep);
+                        if (damagedRamparts.length) {
+                            _.forEach(damagedRamparts, repairWithCreep);
+                        } else if (damagedWalls.length) {
+                            _.forEach(damagedWalls, repairWithCreep);
+                        }
                     }
                 } else {
                     if (super.depositToTowers(creep) === false) {

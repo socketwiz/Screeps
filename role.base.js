@@ -116,6 +116,44 @@ class BaseRole {
     }
 
     /**
+     * Deposit into the link
+     *
+     * @param {Object} creep - creep that has energy to deposit
+     */
+    depositToLink(creep) {
+        let targets = creep.room.find(FIND_STRUCTURES, {
+            'filter': (structure) => {
+                return (structure.structureType == STRUCTURE_LINK) &&
+                    structure.energy < structure.energyCapacity;
+            }
+        });
+
+        let depositCurried = _.curry(this.makeDeposit.bind(this));
+        let depositWithCreep = depositCurried(creep);
+
+        depositWithCreep(targets[0]);
+    }
+
+    /**
+     * Deposit into the storage
+     *
+     * @param {Object} creep - creep that has energy to deposit
+     */
+    depositToStorage(creep) {
+        let targets = creep.room.find(FIND_STRUCTURES, {
+            'filter': (structure) => {
+                return (structure.structureType === STRUCTURE_STORAGE) &&
+                    structure.store.energy < structure.storeCapacity;
+            }
+        });
+
+        let depositCurried = _.curry(this.makeDeposit.bind(this));
+        let depositWithCreep = depositCurried(creep);
+
+        depositWithCreep(targets[0]);
+    }
+
+    /**
      * Find a list of "banks" (extensions, spawns, or towers) to deposit into
      *
      * @param {Object} creep - creep that has energy to deposit
@@ -265,6 +303,32 @@ class BaseRole {
     }
 
     /**
+     * Get resources from the link
+     *
+     * @param {Object} creep - the creep to send to the node
+     * @param {Number} id - an id for a specific node
+     */
+    getResourcesFromLink(creep, id = 0) {
+        let targets = creep.room.find(FIND_STRUCTURES, {
+            'filter': (structure) => {
+                return (structure.structureType == STRUCTURE_LINK) &&
+                    structure.energy < structure.energyCapacity;
+            }
+        });
+
+        let currentSource = targets[id];
+
+        if (currentSource.energy !== currentSource.energyCapacity) {
+            let withdrawFromContainerCurried = _.curry(this.withdrawFromContainer);
+            let withdrawFromContainerWithCreep = withdrawFromContainerCurried(creep);
+
+            withdrawFromContainerWithCreep(currentSource);
+        } else if (creep.harvest(currentSource) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(currentSource, {visualizePathStyle: {stroke: color}});
+        }
+    }
+
+    /**
      * Find the list of energy sources and move creep to one
      *
      * @param {Object} creep - the creep to send to the node
@@ -272,7 +336,7 @@ class BaseRole {
      * @param {String} color - color of the trail to leave
      * @param {Number} id - an id for a specific node
      */
-    getResources(creep, closest, color, id = 0) {
+    getResources(creep, closest, color, id = 0, sourceOnly = false) {
         const MIN_DROPPED_RESOURCES = 25;
 
         let source = creep.pos.findClosestByRange(FIND_SOURCES);
@@ -303,6 +367,7 @@ class BaseRole {
             }
 
             if (containers.length &&
+                sourceOnly === false &&
                 this.energyAvailable !== this.energyCapacityAvailable) {
                 let withdrawFromContainerCurried = _.curry(this.withdrawFromContainer);
                 let withdrawFromContainerWithCreep = withdrawFromContainerCurried(creep);

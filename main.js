@@ -91,7 +91,20 @@ module.exports.loop = function gameLoop() {
                 }
             });
 
+            let links = Game.rooms[gameRoom].find(FIND_STRUCTURES, {
+                'filter': (structure) => {
+                    return (structure.structureType == STRUCTURE_LINK);
+                }
+            });
+
+            let linkSender = links[0];
+            let linkReceiver = links[1];
+
             _.forEach(towers, towerRepairAttack);
+
+            if (linkSender.cooldown === 0 && linkReceiver.cooldown === 0 && linkSender.energy >= 100) {
+                linkSender.transferEnergy(linkReceiver, linkSender.energy);
+            }
 
             room.run(gameRoom, energyAvailable, energyCapacityAvailable);
         }

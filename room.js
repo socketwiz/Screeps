@@ -1,6 +1,8 @@
 
 let data = require('data');
 let RoleHarvester = require('role.harvester');
+let RoleHarvestSender = require('role.harvestSender');
+let RoleHarvestReceiver = require('role.harvestReceiver');
 let RoleUpgrader = require('role.upgrader');
 let RoleBuilder = require('role.builder');
 
@@ -10,6 +12,8 @@ class Room {
         this.energyCapacityAvailable = 0;
         this.units = {
             'harvester': undefined,
+            'harvestSender': undefined,
+            'harvestReceiver': undefined,
             'upgrader': undefined,
             'builder': undefined,
             'roadCrew': undefined
@@ -31,6 +35,12 @@ class Room {
         switch (unit.role) {
             case 'harvester':
                 this.units.harvester = new RoleHarvester(props);
+                break;
+            case 'harvestSender':
+                this.units.harvestSender = new RoleHarvestSender(props);
+                break;
+            case 'harvestReceiver':
+                this.units.harvestReceiver = new RoleHarvestReceiver(props);
                 break;
             case 'upgrader':
                 this.units.upgrader = new RoleUpgrader(props);

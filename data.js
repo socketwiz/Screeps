@@ -29,12 +29,28 @@ const DATA = {
 
                 'units': [
                     {
-                        'count': 2,
+                        'count': 0,
                         'features': {
                             'needed': [[WORK, 1], [CARRY, 1], [MOVE, 3]],
                             'wanted': [[TOUGH, 8], [WORK, 4], [CARRY, 2], [MOVE, 8], [ATTACK, 3], [MOVE, 1]]
                         },
                         'role': 'harvester'
+                    },
+                    {
+                        'count': 1,
+                        'features': {
+                            'needed': [[WORK, 1], [CARRY, 1], [MOVE, 3]],
+                            'wanted': [[TOUGH, 8], [WORK, 4], [CARRY, 2], [MOVE, 8], [ATTACK, 3], [MOVE, 1]]
+                        },
+                        'role': 'harvestSender'
+                    },
+                    {
+                        'count': 1,
+                        'features': {
+                            'needed': [[WORK, 1], [CARRY, 1], [MOVE, 3]],
+                            'wanted': [[TOUGH, 8], [WORK, 4], [CARRY, 2], [MOVE, 8], [ATTACK, 3], [MOVE, 1]]
+                        },
+                        'role': 'harvestReceiver'
                     },
                     {
                         'count': 3,
