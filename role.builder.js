@@ -46,9 +46,16 @@ class RoleBuilder extends BaseRole {
      */
     run(creep) {
         let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
+        let woundedSoldiers = creep.room.find(FIND_MY_CREEPS, {
+            'filter': (soldier) => soldier.hits < soldier.hitsMax
+        });
 
         if (hostiles.length) {
             // All forces to attack
+            return;
+        }
+        if (woundedSoldiers.length && creep.memory.role === 'roadCrew') {
+            // Don't worry about job, get take care of soldiers
             return;
         }
 
@@ -68,16 +75,16 @@ class RoleBuilder extends BaseRole {
             } else {
                 let needsRepairCurried = _.curry(common.needsRepair);
 
-                let areRoadsDamaged = needsRepairCurried(STRUCTURE_ROAD);
-                let areRampartsDamaged = needsRepairCurried(STRUCTURE_RAMPART);
-                let areWallsDamaged = needsRepairCurried(STRUCTURE_WALL);
+                let areRoadsDamaged = needsRepairCurried(STRUCTURE_ROAD, undefined);
+                let areRampartsDamaged = needsRepairCurried(STRUCTURE_RAMPART, undefined);
+                let areWallsDamaged = needsRepairCurried(STRUCTURE_WALL, 1000);
 
                 let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
                 let damagedRoads = creep.room.find(FIND_STRUCTURES, {'filter': areRoadsDamaged});
                 let damagedRamparts = creep.room.find(FIND_STRUCTURES, {'filter': areRampartsDamaged});
                 let damagedWalls = creep.room.find(FIND_STRUCTURES, {'filter': areWallsDamaged});
 
-                if (constructionSites.length) {
+                if (constructionSites.length && creep.memory.role !== 'roadCrew') {
                     // Do main job, build stuff
                     let target = constructionSites[0];
 
@@ -90,7 +97,9 @@ class RoleBuilder extends BaseRole {
 
                     // Repair roads
                     if (creep.memory.role === 'roadCrew') {
-                        _.forEach(damagedRoads, repairWithCreep);
+                        if (super.depositToTowers(creep) === false) {
+                            _.forEach(damagedRoads, repairWithCreep);
+                        }
                     }
 
                     // Repair ramparts
@@ -102,9 +111,7 @@ class RoleBuilder extends BaseRole {
                         }
                     }
                 } else {
-                    if (super.depositToTowers(creep) === false) {
-                        super.depositToContainers(creep);
-                    }
+                    super.depositToContainers(creep);
                 }
             }
         } else {

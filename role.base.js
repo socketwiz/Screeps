@@ -11,7 +11,7 @@ class BaseRole {
      * If there are any hostiles, attack!
      *
      * @param {Object} creep - creep used in the attack
-     * @param {Object} hostile - hostile to heal
+     * @param {Object} hostile - hostile to attack
      */
     attackHostiles(creep, hostile) {
         let dps = _.find(creep.body, body => body.type === RANGED_ATTACK);
@@ -80,9 +80,9 @@ class BaseRole {
             let woundedSoldiers = creep.room.find(FIND_MY_CREEPS, {
                 'filter': (soldier) => soldier.hits < soldier.hitsMax
             });
-            let healSoldiersWithCreepCurried = healSoldiersCurried(creep);
+            let healSoldiersWithCreep = healSoldiersCurried(creep);
 
-            _.forEach(woundedSoldiers, healSoldiersWithCreepCurried.bind(this));
+            _.forEach(woundedSoldiers, healSoldiersWithCreep.bind(this));
         });
     }
 

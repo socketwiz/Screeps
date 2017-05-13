@@ -10,9 +10,9 @@ let Room = require('room');
 function displayRoom(room) {
     let needsRepairCurried = _.curry(common.needsRepair);
 
-    let areRoadsDamaged = needsRepairCurried(STRUCTURE_ROAD);
-    let areRampartsDamaged = needsRepairCurried(STRUCTURE_RAMPART);
-    let areWallsDamaged = needsRepairCurried(STRUCTURE_WALL);
+    let areRoadsDamaged = needsRepairCurried(STRUCTURE_ROAD, undefined);
+    let areRampartsDamaged = needsRepairCurried(STRUCTURE_RAMPART, undefined);
+    let areWallsDamaged = needsRepairCurried(STRUCTURE_WALL, 1000);
 
     let constructionSites = room.find(FIND_CONSTRUCTION_SITES);
     let damagedRoads = room.find(FIND_STRUCTURES, {'filter': areRoadsDamaged});
@@ -102,8 +102,10 @@ module.exports.loop = function gameLoop() {
 
             _.forEach(towers, towerRepairAttack);
 
-            if (linkSender.cooldown === 0 && linkReceiver.cooldown === 0 && linkSender.energy >= 100) {
-                linkSender.transferEnergy(linkReceiver, linkSender.energy);
+            if (linkSender && linkReceiver) { // sometimes one or both of these are undefined, not sure why
+                if (linkSender.cooldown === 0 && linkReceiver.cooldown === 0 && linkSender.energy >= 100) {
+                    linkSender.transferEnergy(linkReceiver, linkSender.energy);
+                }
             }
 
             room.run(gameRoom, energyAvailable, energyCapacityAvailable);
