@@ -7,28 +7,23 @@
  * mod.thing == 'a thing'; // true
  */
 
-var common = {
+module.exports = {
     /**
-     * Move creeps to resource nodes
+     * Figure out which structure need to be repaired
      *
-     * @param {Object} creep - the creep to send to the node
-     * @param {Boolean} closest - send to closest node if true
-     * @param {String} color - color of the trail to leave
-     * @param {Number} id - an id for a specific node
+     * @param {String} structureType - type of structure to repair
+     * @param {Object} structure - structure to check for repairs
+     * @returns {Boolean} - true if needs repair
      */
-    'getResources': function getResources(creep, closest, color, id = 0) {
-        var source = creep.pos.findClosestByRange(FIND_SOURCES);
-        var sources = creep.room.find(FIND_SOURCES);
-        var currentSource = sources[id];
+    needsRepair(structureType, structure) {
+        const NEEDS_REPAIR = structure.hits < structure.hitsMax;
+        const IS_STRUCTURE_TYPE = structure.structureType === structureType;
 
-        if (closest) {
-            currentSource = source;
+        if (IS_STRUCTURE_TYPE && NEEDS_REPAIR) {
+            return true;
         }
 
-        if (creep.harvest(currentSource) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(currentSource, {visualizePathStyle: {stroke: color}});
-        }
+        return false;
     }
 };
 
-module.exports = common;

@@ -1,18 +1,57 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('role.builder');
- * mod.thing === 'a thing'; // true
- */
 
-var common = require('common');
+let BaseRole = require('role.base');
+let common = require('common');
 
-var roleBuilder = {
+class RoleBuilder extends BaseRole {
+    constructor(props) {
+        let unit = props.unit;
+        let creeps = _.filter(Game.creeps, (creep) => creep.memory.role == unit.role);
 
-    /** @param {Creep} creep **/
-    'run': function moveBuilderCreep(creep) {
+        super(props);
+
+        this.color = '#29506D';
+        this.creeps = creeps;
+        this.energyAvailable = props.energyAvailable;
+        this.energyCapacityAvailable = props.energyCapacityAvailable;
+        this.unit = unit;
+
+        if (creeps.length !== unit.count) {
+            console.log(`${_.capitalize(unit.role)}s: ${creeps.length}/${unit.count}`);
+        }
+    }
+
+    /**
+     * Repair a structure
+     *
+     * @param {Object} - creep that will repair structure
+     * @param {Structure} - structure to repair
+     */
+    repair(creep, structure) {
+        if (structure.hits < structure.hitsMax) {
+            // eslint-disable-next-line max-len
+            // console.log(`${_.capitalize(structure.structureType)} needs repair at ${structure.pos.x},${structure.pos.y}`);
+
+            let notNearStructure = creep.repair(structure) === ERR_NOT_IN_RANGE;
+
+            if (notNearStructure) {
+                creep.moveTo(structure, {visualizePathStyle: {stroke: this.color}});
+            }
+        }
+    }
+
+    /**
+     * Work for a single creep to perform
+     *
+     * @param {Object} creep - the creep to put to work
+     */
+    run(creep) {
+        let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
+
+        if (hostiles.length) {
+            // All forces to attack
+            return;
+        }
+
         if (creep.memory.building && creep.carry.energy === 0) {
             creep.memory.building = false;
             creep.say('🔄 harvest');
@@ -23,32 +62,63 @@ var roleBuilder = {
         }
 
         if (creep.memory.building) {
-            var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-
-            if (targets.length) {
-                var target = targets[0];
-                // var target = Game.getObjectById('58fb7ae8b10571061ceaed4b');
-
-                if (creep.build(target) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target, {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
+            if (this.energyAvailable < this.energyCapacityAvailable) {
+                // All hands on deck when energy is below max
+                super.depositToBanks(creep);
             } else {
-                // Do upgrade while waiting for something else to build
-                var notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
+                let needsRepairCurried = _.curry(common.needsRepair);
 
-                // if (creep.carry.energy === 0) {
-                if (notNearController && creep.carry.energy < creep.carryCapacity) {
-                    common.getResources(creep, true, '#29506d', 1);
-                } else if (creep.carry.energy) {
-                    creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#29506d'}});
+                let areRoadsDamaged = needsRepairCurried(STRUCTURE_ROAD);
+                let areRampartsDamaged = needsRepairCurried(STRUCTURE_RAMPART);
+                let areWallsDamaged = needsRepairCurried(STRUCTURE_WALL);
+
+                let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
+                let damagedRoads = creep.room.find(FIND_STRUCTURES, {'filter': areRoadsDamaged});
+                let damagedRamparts = creep.room.find(FIND_STRUCTURES, {'filter': areRampartsDamaged});
+                let damagedWalls = creep.room.find(FIND_STRUCTURES, {'filter': areWallsDamaged});
+
+                if (constructionSites.length) {
+                    // Do main job, build stuff
+                    let target = constructionSites[0];
+
+                    if (creep.build(target) === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(target, {visualizePathStyle: {stroke: this.color}});
+                    }
+                } else if (damagedRoads.length || damagedRamparts.length || damagedWalls.length) {
+                    let repairCurried = _.curry(this.repair);
+                    let repairWithCreep = repairCurried(creep);
+
+                    // Repair roads
+                    if (creep.memory.role === 'roadCrew') {
+                        _.forEach(damagedRoads, repairWithCreep);
+                    }
+
+                    // Repair ramparts
+                    if (creep.memory.role === 'builder') {
+                        if (damagedRamparts.length) {
+                            _.forEach(damagedRamparts, repairWithCreep);
+                        } else if (damagedWalls.length) {
+                            _.forEach(damagedWalls, repairWithCreep);
+                        }
+                    }
                 } else {
-                    common.getResources(creep, false, '#29506d', 1);
+                    if (super.depositToTowers(creep) === false) {
+                        super.depositToContainers(creep);
+                    }
                 }
             }
         } else {
-            common.getResources(creep, false, '#ffaa00', 1);
+            super.getResources(creep, false, this.color, 1);
         }
     }
-};
 
-module.exports = roleBuilder;
+    /**
+     * Find something for the group of builders to do
+     */
+    work() {
+        _.forEach(this.creeps, this.run.bind(this));
+    }
+}
+
+module.exports = RoleBuilder;
+

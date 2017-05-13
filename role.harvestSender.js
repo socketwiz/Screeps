@@ -1,7 +1,7 @@
 
 let BaseRole = require('role.base');
 
-class RoleHarvester extends BaseRole {
+class RoleHarvestSender extends BaseRole {
     constructor(props) {
         let unit = props.unit;
         let creeps = _.filter(Game.creeps, (creep) => creep.memory.role == unit.role);
@@ -24,13 +24,6 @@ class RoleHarvester extends BaseRole {
      * @param {Object} creep - the creep to put to work
      */
     run(creep) {
-        let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
-
-        if (hostiles.length) {
-            // All forces to attack
-            return;
-        }
-
         if (creep.memory.depositing && creep.carry.energy === 0) {
             creep.memory.depositing = false;
             creep.say('🔄 harvest');
@@ -41,16 +34,9 @@ class RoleHarvester extends BaseRole {
         }
 
         if (creep.memory.depositing) {
-            if (super.depositToBanks(creep) === false) {
-                if (super.depositToContainers(creep) === false) {
-                    // Do upgrade while waiting for something else to harvest
-                    if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: this.color}});
-                    }
-                }
-            }
+            super.depositToLink(creep);
         } else {
-            super.getResources(creep, false, this.color);
+            super.getResources(creep, false, this.color, 0, true);
         }
     }
 
@@ -62,5 +48,4 @@ class RoleHarvester extends BaseRole {
     }
 }
 
-module.exports = RoleHarvester;
-
+module.exports = RoleHarvestSender;

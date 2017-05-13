@@ -1,19 +1,36 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('role.upgrader');
- * mod.thing == 'a thing'; // true
- */
 
-var common = require('common');
+let BaseRole = require('role.base');
 
-var roleUpgrader = {
+class RoleUpgrader extends BaseRole {
+    constructor(props) {
+        let unit = props.unit;
+        let creeps = _.filter(Game.creeps, (creep) => creep.memory.role == unit.role);
 
-    /** @param {Creep} creep **/
-    'run': function moveUpgraderCreep(creep) {
-        var notNearController = creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE;
+        super(props);
+
+        this.color = '#FFAA00';
+        this.creeps = creeps;
+        this.energyAvailable = props.energyAvailable;
+        this.energyCapacityAvailable = props.energyCapacityAvailable;
+        this.unit = unit;
+
+        if (creeps.length !== unit.count) {
+            console.log(`${_.capitalize(unit.role)}s: ${creeps.length}/${unit.count}`);
+        }
+    }
+
+    /**
+     * Work for a single creep to perform
+     *
+     * @param {Object} creep - the creep to put to work
+     */
+    run(creep) {
+        let hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
+
+        if (hostiles.length) {
+            // All forces to attack
+            return;
+        }
 
         if (creep.memory.upgrading && creep.carry.energy == 0) {
             creep.memory.upgrading = false;
@@ -21,18 +38,31 @@ var roleUpgrader = {
         }
         if (!creep.memory.upgrading && creep.carry.energy == creep.carryCapacity) {
             creep.memory.upgrading = true;
-            creep.say(':zap: upgrade');
+            creep.say('⚡ upgrade');
         }
 
-        // if (creep.carry.energy === 0) {
-        if (notNearController && creep.carry.energy < creep.carryCapacity) {
-            common.getResources(creep, true, '#29506d', 1);
-        } else if (creep.carry.energy) {
-            creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#29506d'}});
+        if (creep.memory.upgrading) {
+            if (this.energyAvailable < this.energyCapacityAvailable) {
+                // All hands on deck when energy is below max
+                super.depositToBanks(creep);
+            } else {
+                if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
+                    // Do main job, upgrade the controller
+                    creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: this.color}});
+                }
+            }
         } else {
-            common.getResources(creep, false, '#29506d', 1);
+            super.getResources(creep, false, this.color, 1);
         }
     }
-};
 
-module.exports = roleUpgrader;
+    /**
+     * Find something for the group of upgraders to do
+     */
+    work() {
+        _.forEach(this.creeps, this.run.bind(this));
+    }
+}
+
+module.exports = RoleUpgrader;
+

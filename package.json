@@ -1,0 +1,13 @@
+{
+    "scripts": {
+        "lint": "yarn run lint:js",
+        "lint:eslint": "eslint --ignore-path .gitignore",
+        "lint:js": "yarn run lint:eslint -- . "
+    },
+    "dependencies": {
+        "eslint": "^3.19.0",
+        "eslint-config-google": "^0.7.1",
+        "eslint-plugin-node": "^4.2.2",
+        "eslint-plugin-react": "^6.10.3"
+    }
+}

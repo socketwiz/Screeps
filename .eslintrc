@@ -1,0 +1,81 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "modules": true
+        }
+    },
+    "rules": {
+        "array-bracket-spacing": [2, "never"],
+        "comma-dangle": ["error", "never"],
+        "comma-spacing": [2, {"before": false, "after": true}],
+        "computed-property-spacing": [2, "never"],
+        "eol-last": 2,
+        "indent": [2, 4, {"SwitchCase": 1}],
+        "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
+        "func-names": 2,
+        "max-len": [2, 120, 4],
+        "object-curly-spacing": [2, "never"],
+        "quotes": [2, "single"],
+        "quote-props": ["error", "consistent"],
+        "semi": [2, "always"],
+        "semi-spacing": ["error", {"before": false, "after": true}],
+        "space-unary-ops": [1, {"words": false, "nonwords": false}],
+        "space-in-parens": 2,
+        "space-infix-ops": 2,
+        "space-before-blocks": 2,
+        "spaced-comment": [2, "always"],
+
+        "no-console": [1, {"allow": ["warn", "error"]}],
+        "no-eval": 2,
+        "no-multi-spaces": 2,
+        "no-spaced-func": 2,
+        "no-unused-vars": 2
+    },
+    "plugins": [
+        "node"
+    ],
+    "extends": [
+        "google",
+        "eslint:recommended"
+    ],
+    "env": {
+        "node": true,
+        "es6": true
+    },
+    "globals": {
+        "_": true,
+        "Game": true,
+        "OK": true,
+        "ATTACK": true,
+        "HEAL": true,
+        "TOUGH": true,
+        "RANGED_ATTACK": true,
+        "ERR_NOT_IN_RANGE": true,
+        "RESOURCE_ENERGY": true,
+        "FIND_STRUCTURES": true,
+        "FIND_CREEPS": true,
+        "FIND_MY_CREEPS": true,
+        "FIND_DROPPED_RESOURCES": true,
+        "STRUCTURE_EXTENSION": true,
+        "STRUCTURE_SPAWN": true,
+        "STRUCTURE_TOWER": true,
+        "STRUCTURE_CONTAINER": true,
+        "STRUCTURE_RAMPART": true,
+        "STRUCTURE_STORAGE": true,
+        "STRUCTURE_ROAD": true,
+        "FIND_SOURCES": true,
+        "ERR_BUSY": true,
+        "FIND_HOSTILE_CREEPS": true,
+        "ERR_NOT_ENOUGH_ENERGY": true,
+        "ERR_INVALID_ARGS": true,
+        "FIND_CONSTRUCTION_SITES": true,
+        "MOVE": true,
+        "CARRY": true,
+        "WORK": true,
+        "Memory": true,
+        "RoomPosition": true
+    }
+}
+

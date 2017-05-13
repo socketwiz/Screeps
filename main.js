@@ -1,52 +1,77 @@
 
-var roleHarvester = require('role.harvester');
-var roleUpgrader = require('role.upgrader');
-var roleBuilder = require('role.builder');
+let common = require('common');
+let Room = require('room');
 
 /**
- * Return a readable string rather than a number
+ * Print room stats to the console
  *
- * @param {Number} error - error to format
- * @return {String} - formatted error
+ * @param {Object} room - room stats to print
  */
-function formatError(error) {
-    switch (error) {
-        case ERR_BUSY:
-            return 'Busy';
-        case ERR_NOT_ENOUGH_ENERGY:
-            return 'Not enough energy';
-        default:
-            return error;
-    }
+function displayRoom(room) {
+    let needsRepairCurried = _.curry(common.needsRepair);
+
+    let areRoadsDamaged = needsRepairCurried(STRUCTURE_ROAD);
+    let areRampartsDamaged = needsRepairCurried(STRUCTURE_RAMPART);
+    let areWallsDamaged = needsRepairCurried(STRUCTURE_WALL);
+
+    let constructionSites = room.find(FIND_CONSTRUCTION_SITES);
+    let damagedRoads = room.find(FIND_STRUCTURES, {'filter': areRoadsDamaged});
+    let damagedRamparts = room.find(FIND_STRUCTURES, {'filter': areRampartsDamaged});
+    let damagedWalls = room.find(FIND_STRUCTURES, {'filter': areWallsDamaged});
+
+    console.log(`Room "${room.name}" has ${room.energyAvailable} energy`);
+    console.log(`Constructiion sites: ${constructionSites.length}`)
+    console.log(`Roads to repair: ${damagedRoads.length}`)
+    console.log(`Ramparts to repair: ${damagedRamparts.length}`)
+    console.log(`Walls to repair: ${damagedWalls.length}`)
 }
 
-module.exports.loop = function gameLoop() {
-    var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-    var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
-    var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
+/**
+ * Print creep stats to the console
+ *
+ * @param {Object} creep - creep stats to print
+ */
+function displayCreep(creep) {
+    const POS = creep.pos;
 
-    console.log('Upgrades: ' + upgraders.length);
-    console.log('Builders: ' + builders.length);
+    // eslint-disable-next-line
+    console.log(`Room: ${creep.room.name}, Role: ${creep.memory.role}, Energy: ${creep.carry.energy}/${creep.carryCapacity}, POS: ${POS.x},${POS.y}, Name: ${creep.name}`)
+}
 
-    // var tower = Game.getObjectById('d78e235dfa65938db402f4f0');
-    var tower = false;
+/**
+ * Global command to run from console gameStats()
+ */
+global.gameStats = function gameStats() {
+    _.forEach(Game.rooms, displayRoom);
+    _.forEach(Game.creeps, displayCreep);
+};
 
+/**
+ * Tower should attack and or repair
+ *
+ * @param {Object} tower - tower that will attack or repair
+ */
+function towerRepairAttack(tower) {
     if (tower) {
-        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+        let closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        let closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
             'filter': (structure) => structure.hits < structure.hitsMax
         });
 
         if (closestDamagedStructure) {
-            tower.repair(closestDamagedStructure);
+            //tower.repair(closestDamagedStructure);
         }
 
         if (closestHostile) {
             tower.attack(closestHostile);
         }
     }
+}
 
-    for (var name in Memory.creeps) {
+module.exports.loop = function gameLoop() {
+    let room = new Room();
+
+    for (let name in Memory.creeps) {
         if (Memory.creeps.hasOwnProperty(name)) {
             if (!Game.creeps[name]) {
                 delete Memory.creeps[name];
@@ -55,36 +80,36 @@ module.exports.loop = function gameLoop() {
         }
     }
 
-    if (upgraders.length < 3 && harvesters.length && builders.length) {
-        var newUpgrader = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'upgrader'});
-        console.log('Spawning new upgrader: ' + formatError(newUpgrader));
-    }
+    for (let gameRoom in Game.rooms) {
+        if (Game.rooms.hasOwnProperty(gameRoom)) {
+            let energyAvailable = Game.rooms[gameRoom].energyAvailable;
+            let energyCapacityAvailable = Game.rooms[gameRoom].energyCapacityAvailable;
 
-    if (builders.length < 2 && harvesters.length) {
-        var newBuilder = Game.spawns['SpawnDominator'].createCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], undefined, {role: 'builder'});
-        console.log('Spawning new builder: ' + formatError(newBuilder));
-    }
+            let towers = Game.rooms[gameRoom].find(FIND_STRUCTURES, {
+                'filter': (structure) => {
+                    return (structure.structureType == STRUCTURE_TOWER);
+                }
+            });
 
-    for (var room in Game.rooms) {
-        if (Game.rooms.hasOwnProperty(room)) {
-            console.log('Room "' + room + '" has ' + Game.rooms[room].energyAvailable + ' energy');
+            let links = Game.rooms[gameRoom].find(FIND_STRUCTURES, {
+                'filter': (structure) => {
+                    return (structure.structureType == STRUCTURE_LINK);
+                }
+            });
+
+            let linkSender = links[0];
+            let linkReceiver = links[1];
+
+            _.forEach(towers, towerRepairAttack);
+
+            if (linkSender.cooldown === 0 && linkReceiver.cooldown === 0 && linkSender.energy >= 100) {
+                linkSender.transferEnergy(linkReceiver, linkSender.energy);
+            }
+
+            room.run(gameRoom, energyAvailable, energyCapacityAvailable);
         }
     }
 
-    roleHarvester.init();
-
-    for(var creeps in Game.creeps) {
-        if (Game.creeps.hasOwnProperty(creeps)) {
-            var creep = Game.creeps[creeps];
-
-            if (creep.memory.role == 'upgrader') {
-                roleUpgrader.run(creep);
-            }
-            if (creep.memory.role == 'builder') {
-                roleBuilder.run(creep);
-            }
-        }
-    }
 };
 
 // Game.spawns['SpawnDominator'].room.controller.activateSafeMode();
