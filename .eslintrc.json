@@ -16,6 +16,7 @@
         "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
         "func-names": 2,
         "max-len": [2, 120, 4],
+        "no-console": 0,
         "object-curly-spacing": [2, "never"],
         "quotes": [2, "single"],
         "quote-props": ["error", "consistent"],
@@ -27,7 +28,6 @@
         "space-before-blocks": 2,
         "spaced-comment": [2, "always"],
 
-        "no-console": [1, {"allow": ["warn", "error"]}],
         "no-eval": 2,
         "no-multi-spaces": 2,
         "no-spaced-func": 2,
@@ -37,7 +37,6 @@
         "node"
     ],
     "extends": [
-        "google",
         "eslint:recommended"
     ],
     "env": {
@@ -59,12 +58,14 @@
         "FIND_MY_CREEPS": true,
         "FIND_DROPPED_RESOURCES": true,
         "STRUCTURE_EXTENSION": true,
+        "STRUCTURE_LINK": true,
         "STRUCTURE_SPAWN": true,
         "STRUCTURE_TOWER": true,
         "STRUCTURE_CONTAINER": true,
         "STRUCTURE_RAMPART": true,
         "STRUCTURE_STORAGE": true,
         "STRUCTURE_ROAD": true,
+        "STRUCTURE_WALL": true,
         "FIND_SOURCES": true,
         "ERR_BUSY": true,
         "FIND_HOSTILE_CREEPS": true,

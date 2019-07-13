@@ -1,13 +1,15 @@
 {
     "scripts": {
-        "lint": "yarn run lint:js",
-        "lint:eslint": "eslint --ignore-path .gitignore",
-        "lint:js": "yarn run lint:eslint -- . "
+        "lint": "eslint --ignore-path .gitignore .",
+        "postupdates": "npm install",
+        "updates": "ncu -u"
     },
     "dependencies": {
-        "eslint": "^3.19.0",
-        "eslint-config-google": "^0.7.1",
-        "eslint-plugin-node": "^4.2.2",
-        "eslint-plugin-react": "^6.10.3"
+        "eslint": "6.0.1",
+        "eslint-config-google": "0.13.0",
+        "eslint-plugin-node": "9.1.0"
+    },
+    "devDependencies": {
+        "npm-check-updates": "^3.1.18"
     }
 }

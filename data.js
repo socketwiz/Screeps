@@ -2,7 +2,7 @@
 const DATA = {
     'rooms': [
         {
-            'W93N16': {
+            'W45N37': {
                 'extensions': [
                     {
                         'x': 6,

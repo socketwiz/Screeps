@@ -122,12 +122,12 @@ class Room {
             }
         }
 
-        const ROOM = 'W93N16';
+        const ROOM = 'W45N37';
         let lostCreeps = _.filter(Game.creeps, (creep) => creep.room.name !== ROOM);
 
         if (lostCreeps.length) {
             // get back to our spawnPoint
-            let ourRoom = new RoomPosition(17, 46, ROOM);
+            let ourRoom = new RoomPosition(31, 7, ROOM);
             _.forEach(lostCreeps, creep => creep.moveTo(ourRoom));
         }
 
