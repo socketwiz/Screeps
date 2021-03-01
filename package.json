@@ -5,11 +5,11 @@
         "updates": "ncu -u"
     },
     "dependencies": {
-        "eslint": "7.7.0",
+        "eslint": "7.21.0",
         "eslint-config-google": "0.14.0",
         "eslint-plugin-node": "11.1.0"
     },
     "devDependencies": {
-        "npm-check-updates": "^8.0.1"
+        "npm-check-updates": "^11.1.9"
     }
 }
